@@ -18,10 +18,12 @@ public class FirebaseMSGSet : MonoBehaviour
 
     public Firebase.DependencyStatus dependencyStatus { get; private set; } = Firebase.DependencyStatus.UnavailableOther;
 
-    public void CheckAndFixDependencies()
+    // When the app starts, check to make sure that we have
+    // the required dependencies to use Firebase, and if not,
+    // add them if possible.
+    protected virtual void Start()
     {
-        DebugLog("CheckAndFixDependencies");
-        //Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
+        //Firebase.FirebeApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
         Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
         {
             dependencyStatus = task.Result;
@@ -37,6 +39,11 @@ public class FirebaseMSGSet : MonoBehaviour
                 DebugLog("error Could not resolve all Firebase dependencies: " + dependencyStatus);
             }
         });
+        CheckAndFixDependencies();
+    }
+    public void CheckAndFixDependencies()
+    {
+        DebugLog("CheckAndFixDependencies");
     }
 
     // Log the result of the specified task, returning true if the task
@@ -70,13 +77,6 @@ public class FirebaseMSGSet : MonoBehaviour
         return complete;
     }
 
-    // When the app starts, check to make sure that we have
-    // the required dependencies to use Firebase, and if not,
-    // add them if possible.
-    protected virtual void Start()
-    {
-        CheckAndFixDependencies();
-    }
 
     // Setup message event handlers.
     void InitializeFirebase()
@@ -123,10 +123,11 @@ public class FirebaseMSGSet : MonoBehaviour
         );
     }
 
-    public void Noti()
+    public void Noti(string msg)
     {
-
+        Debug.Log($">>> msg >>> msg >>> msg >>> msg");
     }
+
     public void OnMessageReceived(object sender, Firebase.Messaging.MessageReceivedEventArgs e)
     {
         try

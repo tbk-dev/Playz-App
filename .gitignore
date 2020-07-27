@@ -8,6 +8,7 @@
 /[Bb]uilds/
 /[Uu]nityGenerated/
 /[Bb]in/
+*.apk
 
 /Assets/AssetStoreTools*
 

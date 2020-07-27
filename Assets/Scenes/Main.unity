@@ -3390,6 +3390,49 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 638130613}
   m_CullTransparentMesh: 0
+--- !u!1 &645184644
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 645184646}
+  - component: {fileID: 645184645}
+  m_Layer: 0
+  m_Name: FCMplugin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &645184645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 645184644}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7004641b0d8b16e4d8ab43b0117929b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &645184646
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 645184644}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 540, y: 960, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &649770459
 GameObject:
   m_ObjectHideFlags: 0
@@ -5752,10 +5795,21 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 1
-  m_Value: 1
+  m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1789721653}
+        m_MethodName: SwitchVibrationOption
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!1 &1147633451
 GameObject:
   m_ObjectHideFlags: 0
@@ -6221,7 +6275,7 @@ MonoBehaviour:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 14
     m_FontStyle: 0
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 10
     m_MaxSize: 40
     m_Alignment: 4
@@ -6230,7 +6284,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Button
+  m_Text: FCM Test
 --- !u!222 &1234020084
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6411,7 +6465,6 @@ GameObject:
   - component: {fileID: 1329907420}
   - component: {fileID: 1329907419}
   - component: {fileID: 1329907418}
-  - component: {fileID: 1329907417}
   m_Layer: 0
   m_Name: Button
   m_TagString: Untagged
@@ -6439,18 +6492,6 @@ RectTransform:
   m_AnchoredPosition: {x: -157, y: 768}
   m_SizeDelta: {x: 362.10742, y: 108.87009}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1329907417
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1329907415}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c10891f41a3de4944b175fe84b4acbfc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1329907418
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6493,18 +6534,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1329907419}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1329907417}
-        m_MethodName: ToastButton
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1329907419
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7368,10 +7398,21 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 1
-  m_Value: 1
+  m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1789721653}
+        m_MethodName: SwitchVibrationOption
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!1 &1526124148
 GameObject:
   m_ObjectHideFlags: 0
@@ -8200,7 +8241,7 @@ GameObject:
   - component: {fileID: 1679693415}
   - component: {fileID: 1679693414}
   m_Layer: 0
-  m_Name: ButtonShowLog
+  m_Name: Button ShowLog
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8684,6 +8725,7 @@ GameObject:
   - component: {fileID: 1789721652}
   - component: {fileID: 1789721654}
   - component: {fileID: 1789721655}
+  - component: {fileID: 1789721653}
   m_Layer: 0
   m_Name: item
   m_TagString: Untagged
@@ -8712,6 +8754,18 @@ RectTransform:
   m_AnchoredPosition: {x: -56.47, y: -359.4}
   m_SizeDelta: {x: -112.94043, y: 630.07336}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1789721653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1789721651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d892de34411e344da28a607d1df3c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!222 &1789721654
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8980,10 +9034,32 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 1
-  m_Value: 1
+  m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1789721653}
+        m_MethodName: SwitchVibrationOption
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 0}
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1811978778
 GameObject:
   m_ObjectHideFlags: 0
@@ -10016,7 +10092,7 @@ MonoBehaviour:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 60
     m_FontStyle: 1
-    m_BestFit: 1
+    m_BestFit: 0
     m_MinSize: 4
     m_MaxSize: 60
     m_Alignment: 4
