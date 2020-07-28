@@ -9,6 +9,7 @@
 /[Uu]nityGenerated/
 /[Bb]in/
 *.apk
+*.meta
 
 /Assets/AssetStoreTools*
 
