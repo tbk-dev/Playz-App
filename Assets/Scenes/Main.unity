@@ -1210,7 +1210,7 @@ MonoBehaviour:
   logText1: {fileID: 1780689512}
   InputField_topic: {fileID: 243892231}
   scrollRect: {fileID: 372798615}
-  logView: {fileID: 0}
+  logView: {fileID: 243841032}
 --- !u!1 &243892230
 GameObject:
   m_ObjectHideFlags: 0
@@ -7403,7 +7403,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1789721653}
-        m_MethodName: SwitchVibrationOption
+        m_MethodName: SwitchSoundOption
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9039,7 +9039,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1789721653}
-        m_MethodName: SwitchVibrationOption
+        m_MethodName: SwitchNotiOption
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
