@@ -32,24 +32,25 @@ public class Debugging : MonoBehaviour
     }
     #endregion
 
-    public Text logText1;
-    public InputField InputField_topic;
+    [SerializeField]
+    private Text logText1 = null;
+    [SerializeField]
+    private InputField InputField_topic = null;
+
+    FirebaseMSGSet firebaseMSGSet;
 
     private void Awake()
     {
         instance = this;
-        TokenFilePath = Path.Combine(Application.persistentDataPath,"userToken.txt");
+        TokenFilePath = Path.Combine(Application.persistentDataPath, "userToken.txt");
+        logText1.text = debugmsg;
     }
+
+    WebViewSift webViewSift;
+
     // Start is called before the first frame update
     void Start()
     {
-        DebugLog("key S : Subscribe");
-        DebugLog("key U : Unsubscribe");
-        DebugLog("key T : Toggle Token On Init");
-        DebugLog("key L : BottonLogDependencyStatus");
-
-        DebugLog("Origin TokenRegistrationOnInitEnabled = " + FirebaseMessaging.TokenRegistrationOnInitEnabled);
-
         firebaseMSGSet = FindObjectOfType<FirebaseMSGSet>();
         webViewSift = FindObjectOfType<WebViewSift>();
 
@@ -59,13 +60,71 @@ public class Debugging : MonoBehaviour
         if (webViewSift == null)
             DebugLog("webViewSift null");
 
-        StartCoroutine(SetMessageDebuging());
+        //StartCoroutine(BottonLogDependencyStatus());
+
     }
 
     private void Update()
     {
-        Order();
     }
+
+
+    Firebase.DependencyStatus lastStatus;
+
+    //public IEnumerator BtnDependencyStatus()
+    public void BtnDependencyStatus()
+    {
+        DebugLog("dependency status: " + firebaseMSGSet.dependencyStatus.ToString());
+        //while (true)
+        {
+            if (lastStatus != firebaseMSGSet.dependencyStatus)
+            {
+                //DebugLog("One or more Firebase dependencies are not present.");
+                //DebugLog("Current dependency status: " + firebaseMSGSet.dependencyStatus.ToString());
+
+                lastStatus = firebaseMSGSet.dependencyStatus;
+                DebugLog("change dependency status: " + firebaseMSGSet.dependencyStatus.ToString());
+            }
+            //yield return new WaitForSeconds(1);
+        }
+    }
+
+    public void BtnToggleTokenOnInit()
+    {
+        Debug.Log($"BottonToggleTokenOnInit");
+        firebaseMSGSet.ToggleTokenOnInit();
+
+    }
+
+    public void BtnSubscribe()
+    {
+        Debug.Log($"BottonSubscribe");
+        firebaseMSGSet.SubscribeTopic(InputField_topic.text);
+    }
+
+    public void BtnUnsubscribe()
+    {
+        Debug.Log($"BottonUnsubscribe");
+        firebaseMSGSet.UnSubscribeTopic(InputField_topic.text);
+    }
+
+    public void BtnTeststart()
+    {
+        Debug.Log($"Teststart");
+        webViewSift.webViewObject.CallOnStarted("http://dev-playz.virtual-gate.co.kr/member/login?response_type=jwt");
+    }
+
+    public void BtnTestload()
+    {
+        Debug.Log($"Testload");
+        webViewSift.webViewObject.CallOnLoaded("http://dev-playz.virtual-gate.co.kr/member/login?response_type=jwt");
+    }
+
+    public void BtnCheckAndFixDependencies()
+    {
+        firebaseMSGSet.CheckAndFixDependencies();
+    }
+
 
     string userToken;
     string[] userTokenArrya;
@@ -87,7 +146,6 @@ public class Debugging : MonoBehaviour
             DebugLog(ex.Message.ToString());
         }
     }
-
 
     public void ReadToken()
     {
@@ -118,250 +176,7 @@ public class Debugging : MonoBehaviour
             DebugLog($"ReadToken ex {ex.Message.ToString()}");
         }
     }
-    //public void Send()
-    //{
-    //    var fmsg = new FirebaseMessage();
-    //    fmsg.
-    //    FirebaseMessaging.Send()
-    //}
 
-    IEnumerator SetMessageDebuging()
-    {
-        while (true)
-        {
-            if (firebaseMSGSet.IsFirebaseInitialized)
-            {
-                DebugLog("SetMessageDebuging");
-                Firebase.Messaging.FirebaseMessaging.MessageReceived += OnMessageReceived_Debugging;
-                Firebase.Messaging.FirebaseMessaging.TokenReceived += OnTokenReceived_Debugging;
-                break;
-            }
-            else
-            {
-                DebugLog("Waitting firebase init");
-            }
-
-            yield return new WaitForSecondsRealtime(0.2f);
-        }
-
-    }
-
-    //public void GetToken()
-    //{
-    //    Firebase.Auth.FirebaseUser user = auth.CurrentUser;
-    //    user.TokenAsync(true).ContinueWith(task => {
-    //        if (task.IsCanceled)
-    //        {
-    //            Debug.LogError("TokenAsync was canceled.");
-    //            return;
-    //        }
-
-    //        if (task.IsFaulted)
-    //        {
-    //            Debug.LogError("TokenAsync encountered an error: " + task.Exception);
-    //            return;
-    //        }
-
-    //        string idToken = task.Result;
-
-    //        // Send token to your backend via HTTPS
-    //        // ...
-    //    });
-    //}
-
-    private void OnTokenReceived_Debugging(object sender, TokenReceivedEventArgs token)
-    {
-        DebugLog("OnTokenReceived_Debugging Registration Token: " + token.Token);
-        userToken = token.Token;
-        SaveToken(userToken);
-    }
-
-    FirebaseMSGSet firebaseMSGSet;
-    WebViewSift webViewSift;
-    private void OnMessageReceived_Debugging(object sender, MessageReceivedEventArgs e)
-    {
-        try
-        {
-
-            DebugLog("OnMessageReceived_Debugging new message");
-            var notification = e.Message.Notification;
-            if (notification != null)
-            {
-                DebugLog("title: " + notification.Title);
-                DebugLog("body: " + notification.Body);
-                var android = notification.Android;
-                if (android != null)
-                {
-                    DebugLog("android channel_id: " + android.ChannelId);
-                }
-            }
-
-            if (e.Message.From.Length > 0)
-                DebugLog("from: " + e.Message.From);
-
-            if (e.Message.Link != null)
-            {
-                DebugLog("link: " + e.Message.Link.ToString());
-            }
-
-            if (e.Message.Data.Count > 0)
-            {
-                DebugLog("data:");
-                foreach (System.Collections.Generic.KeyValuePair<string, string> iter in e.Message.Data)
-                {
-                    DebugLog("  " + iter.Key + ": " + iter.Value);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.Log($"OnMessageReceived_Debugging = {ex.Message}");
-        }
-    }
-
-
-    Firebase.DependencyStatus lastStatus;
-    public void Order()
-    {
-        if (firebaseMSGSet.dependencyStatus != Firebase.DependencyStatus.Available)
-        {
-            if (lastStatus != Firebase.DependencyStatus.Available && lastStatus != firebaseMSGSet.dependencyStatus)
-            {
-                DebugLog("One or more Firebase dependencies are not present.");
-                DebugLog("Current dependency status: " + firebaseMSGSet.dependencyStatus.ToString());
-
-                lastStatus = firebaseMSGSet.dependencyStatus;
-            }
-            return;
-        }
-
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            BottonSubscribe();
-        }
-        else if (Input.GetKeyDown(KeyCode.U))
-        {
-            BottonUnsubscribe();
-        }
-        else if (Input.GetKeyDown(KeyCode.T))
-        {
-            BottonToggleTokenOnInit();
-        }
-        else if (Input.GetKeyDown(KeyCode.L))
-        {
-            BottonLogDependencyStatus();
-        }
-    }
-
-    const int kMaxLogSize = 16382;
-    public ScrollRect scrollRect;
-
-    // Output text to the debug log text field, as well as the console.
-    public void DebugLog(string s)
-    {
-        Debug.Log($"log >>> {s}");
-
-        while (logText1.text.Length > kMaxLogSize)
-        {
-            int index = logText1.text.IndexOf("\n");
-            logText1.text = logText1.text.Substring(index + 1);
-        }
-
-        logText1.text += s + "\n";
-
-        scrollRect.verticalNormalizedPosition = 0.0f;
-    }
-
-    protected bool LogTaskCompletion(Task task, string operation)
-    {
-        bool complete = false;
-        if (task.IsCanceled)
-        {
-            DebugLog(operation + " canceled.");
-        }
-        else if (task.IsFaulted)
-        {
-            DebugLog(operation + " encounted an error.");
-            foreach (Exception exception in task.Exception.Flatten().InnerExceptions)
-            {
-                string errorCode = "";
-                Firebase.FirebaseException firebaseEx = exception as Firebase.FirebaseException;
-                if (firebaseEx != null)
-                {
-                    errorCode = $"Error.{((Firebase.Messaging.Error)firebaseEx.ErrorCode).ToString()}: ";
-                }
-                DebugLog(errorCode + exception.ToString());
-            }
-        }
-        else if (task.IsCompleted)
-        {
-            DebugLog(operation + " completed");
-            complete = true;
-        }
-        return complete;
-    }
-
-    public void BottonLogDependencyStatus()
-    {
-        DebugLog("One or more Firebase dependencies are not present.");
-        DebugLog("Current dependency status: " + firebaseMSGSet.dependencyStatus.ToString());
-    }
-
-    public void BottonToggleTokenOnInit()
-    {
-        ToggleTokenOnInit();
-    }
-
-    public void BottonSubscribe()
-    {
-        firebaseMSGSet.SubscribeTopic(InputField_topic.text);
-    }
-
-    public void BottonUnsubscribe()
-    {
-        Firebase.Messaging.FirebaseMessaging.UnsubscribeAsync(InputField_topic.text).ContinueWithOnMainThread(
-          task =>
-          {
-              bool isAction = LogTaskCompletion(task, "UnsubscribeAsync");
-
-              if (isAction)
-              {
-                  DebugLog("Unsubscribed from " + InputField_topic.text);
-              }
-              else
-              {
-                  DebugLog("!!! fail Unsubscribed from " + InputField_topic.text);
-              }
-          }
-        );
-    }
-
-    public void ToggleTokenOnInit()
-    {
-        bool newValue = !Firebase.Messaging.FirebaseMessaging.TokenRegistrationOnInitEnabled;
-        Firebase.Messaging.FirebaseMessaging.TokenRegistrationOnInitEnabled = newValue;
-        DebugLog("Set TokenRegistrationOnInitEnabled to " + newValue);
-    }
-
-    public void Teststart()
-    {
-        Debug.Log($"log >>> start");
-        webViewSift.webViewObject.CallOnStarted("http://www.daum.net");
-    }
-
-    public void Testload()
-    {
-        Debug.Log($"log >>> loaded");
-        webViewSift.webViewObject.CallOnLoaded("http://www.naver.com");
-    }
-
-    public void CheckAndFixDependencies()
-    {
-        if (firebaseMSGSet == null)
-            firebaseMSGSet = FindObjectOfType<FirebaseMSGSet>();
-
-        firebaseMSGSet.CheckAndFixDependencies();
-    }
 
     public void LangBtn()
     {
@@ -383,7 +198,9 @@ public class Debugging : MonoBehaviour
         LeanLocalization.UpdateTranslations();
     }
 
-    public GameObject logView;
+    [SerializeField]
+    private GameObject logView;
+    private string debugmsg = " ";
     bool ActiveLog = true;
     public void ShowLogView()
     {
@@ -401,10 +218,63 @@ public class Debugging : MonoBehaviour
         }
     }
 
-    public void OnDestroy()
+    public void ClearLog()
     {
-        Firebase.Messaging.FirebaseMessaging.MessageReceived -= OnMessageReceived_Debugging;
-        Firebase.Messaging.FirebaseMessaging.TokenReceived -= OnTokenReceived_Debugging;
+        debugmsg = "";
+        logText1.text = debugmsg;
+        scrollRect.verticalNormalizedPosition = 0.0f;
     }
 
+    const int kMaxLogSize = 16382;
+
+    [SerializeField]
+    private ScrollRect scrollRect;
+    // Output text to the debug log text field, as well as the console.
+    public void DebugLog(string s)
+    {
+#if UNITY_EDITOR
+        Debug.Log($"Ulog >>> {s}");
+#else
+        Console.WriteLine($"Ulog >>> {s}");
+#endif
+
+        while (debugmsg.Length > kMaxLogSize)
+        {
+            int index = debugmsg.IndexOf("\n");
+            debugmsg = debugmsg.Substring(index + 1);
+        }
+
+        debugmsg += s + "\n";
+
+        logText1.text = debugmsg;
+
+        scrollRect.verticalNormalizedPosition = 0.0f;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
