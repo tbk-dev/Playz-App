@@ -31,11 +31,13 @@ public class WebViewSift : MonoBehaviour
 
         if (simpleSideMenu.TargetState == State.Closed)
         {
-            webViewObject.SetVisibility(false);
+            if (webViewObject.GetVisibility())
+                webViewObject.SetVisibility(false);
         }
         else
         {
-            webViewObject.SetVisibility(true);
+            if(!webViewObject.GetVisibility())
+                webViewObject.SetVisibility(true);
         }
 
     }
@@ -75,4 +77,12 @@ public class WebViewSift : MonoBehaviour
         webViewObject.EvaluateJS("location.reload(true)");
     }
 
+    public void WebViewGoLogin()
+    {
+        webViewObject.LoadURL("http://dev-playz.virtual-gate.co.kr/member/login");
+    }
+    public void WebViewGoLoginjwtp()
+    {
+        webViewObject.LoadURL("http://dev-playz.virtual-gate.co.kr/member/login?response_type=jwt");
+    }
 }
