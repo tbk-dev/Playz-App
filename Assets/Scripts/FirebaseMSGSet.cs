@@ -5,16 +5,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Firebase.Messaging;
 
 public class FirebaseMSGSet : MonoBehaviour
 {
     Firebase.FirebaseApp app;
-    public ToggleController BtnReciveAgree, OnSound, OnVibration;
 
     protected bool isFirebaseInitialized = false;
     public bool IsFirebaseInitialized { get { return isFirebaseInitialized; } }
 
-    public string topic = "TestTopic";
+    public string defaultTopic = "playznoti";
+    public string userToken;
 
     public Firebase.DependencyStatus dependencyStatus { get; private set; } = Firebase.DependencyStatus.UnavailableOther;
 
@@ -23,10 +24,18 @@ public class FirebaseMSGSet : MonoBehaviour
     // add them if possible.
     protected virtual void Start()
     {
+        CheckAndFixDependencies();
+    }
+
+    public void CheckAndFixDependencies()
+    {
+        Debugging.instance.Loglate("CheckAndFixDependencies");
         //Firebase.FirebeApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
         Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
         {
             dependencyStatus = task.Result;
+            //Debugging.instance.Loglate($"Current dependency status: {dependencyStatus.ToString()});
+
             if (dependencyStatus == Firebase.DependencyStatus.Available)
             {
                 // Create and hold a reference to your FirebaseApp,
@@ -36,14 +45,42 @@ public class FirebaseMSGSet : MonoBehaviour
             else
             {
                 // Set a flag here to indicate whether Firebase is ready to use by your app.
-                DebugLog("error Could not resolve all Firebase dependencies: " + dependencyStatus);
+                Debugging.instance.Loglate("error Could not resolve all Firebase dependencies: " + dependencyStatus);
             }
         });
-        CheckAndFixDependencies();
     }
-    public void CheckAndFixDependencies()
+
+    // Setup message event handlers.
+    void InitializeFirebase()
     {
-        DebugLog("CheckAndFixDependencies");
+        try
+        {
+            Debugging.instance.Loglate($"Start Firebase Messaging Initialized");
+            //Debugging.instance.Loglate($"Start Firebase Messaging Initialized");
+            Firebase.Messaging.FirebaseMessaging.MessageReceived += OnMessageReceived;
+            Firebase.Messaging.FirebaseMessaging.TokenReceived += OnTokenReceived;
+
+            SubscribeTopic(defaultTopic);
+
+            // This will display the prompt to request permission to receive
+            // notifications if the prompt has not already been displayed before. (If
+            // the user already responded to the prompt, thier decision is cached by
+            // the OS and can be changed in the OS settings).
+            Firebase.Messaging.FirebaseMessaging.RequestPermissionAsync().ContinueWithOnMainThread(
+              task =>
+              {
+                  LogTaskCompletion(task, "RequestPermissionAsync");
+              }
+            );
+
+            Debugging.instance.Loglate("Firebase init complite");
+            isFirebaseInitialized = true;
+        }
+        catch (Exception ex)
+        {
+            Debugging.instance.Loglate($"Firebase init complite ex : {ex.Message}");
+
+        }
     }
 
     // Log the result of the specified task, returning true if the task
@@ -53,11 +90,11 @@ public class FirebaseMSGSet : MonoBehaviour
         bool complete = false;
         if (task.IsCanceled)
         {
-            DebugLog(operation + " canceled.");
+            Debugging.instance.Loglate(operation + " canceled.");
         }
         else if (task.IsFaulted)
         {
-            DebugLog(operation + " encounted an error.");
+            Debugging.instance.Loglate(operation + " encounted an error.");
             foreach (Exception exception in task.Exception.Flatten().InnerExceptions)
             {
                 string errorCode = "";
@@ -66,61 +103,60 @@ public class FirebaseMSGSet : MonoBehaviour
                 {
                     errorCode = $"Error.{((Firebase.Messaging.Error)firebaseEx.ErrorCode).ToString()}: ";
                 }
-                DebugLog(errorCode + exception.ToString());
+                Debugging.instance.Loglate(errorCode + exception.ToString());
             }
         }
         else if (task.IsCompleted)
         {
-            DebugLog(operation + " completed");
+            Debugging.instance.Loglate(operation + " completed");
             complete = true;
         }
         return complete;
     }
 
 
-    // Setup message event handlers.
-    void InitializeFirebase()
-    {
-        DebugLog($"Start Firebase Messaging Initialized");
-        Firebase.Messaging.FirebaseMessaging.MessageReceived += OnMessageReceived;
-        Firebase.Messaging.FirebaseMessaging.TokenReceived += OnTokenReceived;
-
-        SubscribeTopic(topic);
-
-        // This will display the prompt to request permission to receive
-        // notifications if the prompt has not already been displayed before. (If
-        // the user already responded to the prompt, thier decision is cached by
-        // the OS and can be changed in the OS settings).
-        Firebase.Messaging.FirebaseMessaging.RequestPermissionAsync().ContinueWithOnMainThread(
-          task =>
-          {
-              LogTaskCompletion(task, "RequestPermissionAsync");
-              DebugLog("firebase init RequestPermissionAsync");
-          }
-        );
-
-        DebugLog("Firebase init complite");
-        isFirebaseInitialized = true;
-    }
-
     public void SubscribeTopic(string topic)
     {
-
+        bool isAction = false;
         Firebase.Messaging.FirebaseMessaging.SubscribeAsync(topic).ContinueWithOnMainThread(
           task =>
           {
-              bool isAction = LogTaskCompletion(task, "SubscribeAsync");
+              isAction = LogTaskCompletion(task, "SubscribeAsync");
 
-              if (isAction)
-              {
-                  DebugLog("Subscribed to " + topic);
-              }
-              else
-              {
-                  DebugLog(" !!! fail Subscribed to " + topic);
-              }
+          }
+        ).Wait();
+
+
+        if (isAction)
+        {
+            Debugging.instance.Loglate("Subscribed to " + topic);
+        }
+        else
+        {
+            Debugging.instance.Loglate(" !!! fail Subscribed to " + topic);
+        }
+    }
+
+    public void UnSubscribeTopic(string topic)
+    {
+        bool isAction = false;
+
+        Firebase.Messaging.FirebaseMessaging.UnsubscribeAsync(topic).ContinueWithOnMainThread(
+          task =>
+          {
+              isAction = LogTaskCompletion(task, "UnsubscribeAsync");
+
           }
         );
+
+        if (isAction)
+        {
+            Debugging.instance.Loglate("Unsubscribed from " + topic);
+        }
+        else
+        {
+            Debugging.instance.Loglate("fail Unsubscribed from " + topic);
+        }
     }
 
     public void Noti(string msg)
@@ -130,28 +166,86 @@ public class FirebaseMSGSet : MonoBehaviour
 
     public void OnMessageReceived(object sender, Firebase.Messaging.MessageReceivedEventArgs e)
     {
+        Debugging.instance.Loglate("OnMessageReceived_Debugging new message");
+        var notification = e.Message.Notification;
+        if (notification == null)
+        {
+            Debugging.instance.Loglate("notification == null");
+            return;
+        }
+
         try
         {
-            DebugLog($"Received Title: {e.Message.Notification?.Title}");
-            DebugLog($"Received Body: {e.Message.Notification?.Body}");
-            DebugLog($"Received ChannelId: {e.Message.Notification.Android?.ChannelId}");
+            Debugging.instance.Loglate($"Received Title: {notification.Title}");
+            Debugging.instance.Loglate($"Received Body: {notification.Body}");
 
-            if (OnVibration)
+            if (notification.Android != null)
             {
-                DebugLog("  -- onVibration");
-                Handheld.Vibrate();
+                Debugging.instance.Loglate($"Received ChannelId: {notification.Android?.ChannelId}");
             }
+
+            if (e.Message.From.Length > 0)
+                Debugging.instance.Loglate("from: " + e.Message.From);
+
+
+            if (e.Message.Link != null)
+            {
+                Debugging.instance.Loglate("link: " + e.Message.Link.ToString());
+            }
+
+            if (e.Message.Data.Count > 0)
+            {
+                Debugging.instance.Loglate("data:");
+                foreach (KeyValuePair<string, string> iter in e.Message.Data)
+                {
+                    Debugging.instance.Loglate("  " + iter.Key + ": " + iter.Value);
+                }
+            }
+
         }
         catch (Exception ex)
         {
-            Debug.Log($"OnMessageReceived = {ex.Message}");
+            Debugging.instance.Loglate($"OnMessageReceived = {ex.Message}");
         }
 
     }
 
+
+    public void ToggleTokenOnInit()
+    {
+        bool newValue = !FirebaseMessaging.TokenRegistrationOnInitEnabled;
+        FirebaseMessaging.TokenRegistrationOnInitEnabled = newValue;
+        Debugging.instance.Loglate("Set TokenRegistrationOnInitEnabled to " + newValue);
+    }
+
+    //public void GetToken()
+    //{
+    //    Firebase.Auth.FirebaseUser user = auth.CurrentUser;
+    //    user.TokenAsync(true).ContinueWith(task => {
+    //        if (task.IsCanceled)
+    //        {
+    //            Debug.LogError("TokenAsync was canceled.");
+    //            return;
+    //        }
+
+    //        if (task.IsFaulted)
+    //        {
+    //            Debug.LogError("TokenAsync encountered an error: " + task.Exception);
+    //            return;
+    //        }
+
+    //        string idToken = task.Result;
+
+    //        // Send token to your backend via HTTPS
+    //        // ...
+    //    });
+    //}
+
+
     public void OnTokenReceived(object sender, Firebase.Messaging.TokenReceivedEventArgs token)
     {
-        DebugLog("Received Registration Token: " + token.Token);
+        Debugging.instance.Loglate("Received Registration Token: " + token.Token);
+        userToken = token.Token;
         Debugging.instance.SaveToken($"{token.Token}");
     }
 
@@ -159,10 +253,6 @@ public class FirebaseMSGSet : MonoBehaviour
     // Exit if escape (or back, on mobile) is pressed.
     protected virtual void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Application.Quit();
-        }
     }
 
     // End our messaging session when the program exits.
@@ -172,17 +262,5 @@ public class FirebaseMSGSet : MonoBehaviour
         Firebase.Messaging.FirebaseMessaging.TokenReceived -= OnTokenReceived;
     }
 
-    // Output text to the debug log text field, as well as the console.
-    public void DebugLog(string s)
-    {
-        try
-        {
-            Debugging.Instance.DebugLog(s);
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError(ex.Message);
-        }
-    }
 
 }

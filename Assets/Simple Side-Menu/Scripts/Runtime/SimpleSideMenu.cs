@@ -3,6 +3,7 @@
 // Author: Daniel Lochner
 
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -55,6 +56,8 @@ namespace DanielLochner.Assets.SimpleSideMenu
             Left,
             Right,
             Top,
+            TopLeft,
+            TopRight,
             Bottom
         }
         public enum State
@@ -64,6 +67,7 @@ namespace DanielLochner.Assets.SimpleSideMenu
         }
         #endregion
 
+
         #region Methods
         private void Start()
         {
@@ -72,6 +76,7 @@ namespace DanielLochner.Assets.SimpleSideMenu
             if (Validate())
             {
                 Setup();
+                StartCoroutine(Rotate());
             }
             else
             {
@@ -80,16 +85,17 @@ namespace DanielLochner.Assets.SimpleSideMenu
         }
         private void Update()
         {
+            //Swap();
             OnStateUpdate();
             OnOverlayUpdate();
-            Rotate();
         }
-        #if UNITY_EDITOR
+
+#if UNITY_EDITOR
         private void OnValidate()
         {
             Initialize();
         }
-        #endif
+#endif
 
         public void OnInitializePotentialDrag(PointerEventData eventData)
         {
@@ -167,6 +173,10 @@ namespace DanielLochner.Assets.SimpleSideMenu
 
             return valid;
         }
+
+        //float rectWidth = 1920f;
+        //float rectheight = 1080f;
+
         private void Setup()
         {
             //Canvas & Camera
@@ -183,6 +193,14 @@ namespace DanielLochner.Assets.SimpleSideMenu
             Vector2 anchorMin = Vector2.zero;
             Vector2 anchorMax = Vector2.zero;
             Vector2 pivot = Vector2.zero;
+
+            //float rectWidth = rectTransform.rect.width * rectTransform.transform.parent.transform.localScale.x;
+            //float rectheight = rectTransform.rect.height * rectTransform.transform.parent.transform.localScale.y;
+            float rectWidth = Screenwidth;
+            float rectheight = Screenheight;
+            float recPosx = rectTransform.localPosition.x * rectTransform.transform.parent.transform.localScale.x;
+            float recPosy = rectTransform.localPosition.y * rectTransform.transform.parent.transform.localScale.y;
+
             switch (placement)
             {
                 case Placement.Left:
@@ -190,28 +208,57 @@ namespace DanielLochner.Assets.SimpleSideMenu
                     anchorMax = new Vector2(0, 0.5f);
                     pivot = new Vector2(1, 0.5f);
                     closedPosition = new Vector2(0, rectTransform.localPosition.y);
-                    openPosition = new Vector2(rectTransform.rect.width, rectTransform.localPosition.y);
+                    openPosition = new Vector2(rectWidth, rectTransform.localPosition.y);
                     break;
+
+                case Placement.TopLeft:
+                    anchorMin = new Vector2(0, 1);
+                    anchorMax = new Vector2(0, 1);
+                    pivot = new Vector2(1, 0);
+                    closedPosition = new Vector2(0, 0);
+                    //if (screenRotationState == SCREENROTATIONSTATE.portrait)
+                        openPosition = new Vector2(rectWidth, -1 * (rectheight - (rectheight * 0.1f)));
+                    //if (screenRotationState == SCREENROTATIONSTATE.landscapeLeft)
+                    //    openPosition = new Vector2(rectWidth, -1 * (rectheight - 192));
+
+                    //Debug.Log($"rectWidth : {rectWidth}   rectheight : {rectheight}    calculater : { -1 * (rectheight - (rectheight * 0.1f)) }");
+                    //Debug.Log("closedPosition :" + closedPosition);
+                    //Debug.Log("openPosition :" + openPosition);
+                    //Debug.Log("localPosition :" + rectTransform.localPosition);
+                    //Debug.Log("rect :" + rectTransform.rect);
+                    break;
+
                 case Placement.Right:
                     anchorMin = new Vector2(1, 0.5f);
                     anchorMax = new Vector2(1, 0.5f);
                     pivot = new Vector2(0, 0.5f);
                     closedPosition = new Vector2(0, rectTransform.localPosition.y);
-                    openPosition = new Vector2(-1 * rectTransform.rect.width, rectTransform.localPosition.y);
+                    openPosition = new Vector2(-1 * rectWidth, rectTransform.localPosition.y);
                     break;
+
+
                 case Placement.Top:
                     anchorMin = new Vector2(0.5f, 1);
                     anchorMax = new Vector2(0.5f, 1);
                     pivot = new Vector2(0.5f, 0);
                     closedPosition = new Vector2(rectTransform.localPosition.x, 0);
-                    openPosition = new Vector2(rectTransform.localPosition.x, -1 * rectTransform.rect.height);
+                    openPosition = new Vector2(rectTransform.localPosition.x, -1 * rectheight);
                     break;
+
+                case Placement.TopRight:
+                    anchorMin = new Vector2(1, 1f);
+                    anchorMax = new Vector2(1, 1f);
+                    pivot = new Vector2(0, 1f);
+                    closedPosition = new Vector2(0, rectheight - (rectheight * 0.1f)); // new Vector2(0,0);
+                    openPosition = new Vector2(-1 * rectWidth, 0);
+                    break;
+
                 case Placement.Bottom:
                     anchorMin = new Vector2(0.5f, 0);
                     anchorMax = new Vector2(0.5f, 0);
                     pivot = new Vector2(0.5f, 1);
                     closedPosition = new Vector2(rectTransform.localPosition.x, 0);
-                    openPosition = new Vector2(rectTransform.localPosition.x, rectTransform.rect.height);
+                    openPosition = new Vector2(rectTransform.localPosition.x, rectheight);
                     break;
             }
             rectTransform.sizeDelta = rectTransform.rect.size;
@@ -337,7 +384,7 @@ namespace DanielLochner.Assets.SimpleSideMenu
                 {
                     SetState(CurrentState);
                 }
-            }   
+            }
         }
         private void OnStateUpdate()
         {
@@ -394,42 +441,60 @@ namespace DanielLochner.Assets.SimpleSideMenu
         }
         #endregion
 
-        bool isPortrait = true;
-        public void Rotate()
+        enum SCREENROTATIONSTATE
         {
-            if (Screen.width < Screen.height)
-            {
-                if (!isPortrait)
-                {
-                    Debug.Log("Portrait mode");
-                    // Portrait mode
-                    isPortrait = true;
-                    rectTransform.sizeDelta = new Vector2(Screen.width, (int)(Screen.height * 0.9));
-                    var currentState = TargetState;
-                    Setup();
-                    TargetState = currentState;
-                    //rectTransform.ForceUpdateRectTransforms();/* = new Rect(0.0f, 0.0f, Screen.width, Screen.height);*/
-                }
-                   
-            }
-            else
-            {
-                if (isPortrait)
-                {
-                    Debug.Log("Landscape mode");
-                    // Landscape mode
-                    isPortrait = false;
-                    rectTransform.sizeDelta = new Vector2(Screen.width, (int)(Screen.height - 192));
-                    var currentState = TargetState;
-                    Setup();
-                    TargetState = currentState;
-
-                    //rectTransform.
-                    //controlArea = new Rect(0.0f, 0.0f, Screen.width * 0.5f, Screen.height);
-                    //logArea = new Rect(Screen.width * 0.5f, 0.0f, Screen.width * 0.5f, Screen.height);
-                }
-            }
+            init,
+            portrait,
+            landscapeLeft,
         }
+        int Screenheight;
+        int Screenwidth;
 
+
+        SCREENROTATIONSTATE screenRotationState;
+        public IEnumerator Rotate()
+        {
+            while (true)
+            {
+                // Portrait mode
+                if (Screen.width < Screen.height)
+                {
+                    if (screenRotationState != SCREENROTATIONSTATE.portrait)
+                    {
+                        Screenheight = Screen.height;
+                        Screenwidth = Screen.width;
+
+                        //Debug.Log($"Not Portrait -- height { Screen.height}, width  { Screen.width}");
+                        screenRotationState = SCREENROTATIONSTATE.portrait;
+                        rectTransform.sizeDelta = new Vector2(Screenwidth/*Screen.width*/, (int)(Screenheight * 0.9));//(int)(Screen.height * 0.9));
+                        var currentState = TargetState;
+                        Setup();
+                        TargetState = currentState;
+                        //rectTransform.ForceUpdateRectTransforms();/* = new Rect(0.0f, 0.0f, Screen.width, Screen.height);*/
+                        Debug.Log(rectTransform.sizeDelta);
+                    }
+                }
+                else
+                {
+                    if (screenRotationState != SCREENROTATIONSTATE.landscapeLeft)
+                    {
+                        Screenheight = Screen.width;
+                        Screenwidth = Screen.height;
+
+                        //Debug.Log($"Not landscapeLeft --  height { Screen.height}, width  { Screen.width}");
+                        screenRotationState = SCREENROTATIONSTATE.landscapeLeft;
+                        rectTransform.sizeDelta = new Vector2(Screenwidth/*Screen.width*/, Screenheight - 192);//(int)(Screen.height - 192));
+                        var currentState = TargetState;
+                        Setup();
+                        TargetState = currentState;
+                        //controlArea = new Rect(0.0f, 0.0f, Screen.width * 0.5f, Screen.height);
+                        //logArea = new Rect(Screen.width * 0.5f, 0.0f, Screen.width * 0.5f, Screen.height);
+                        Debug.Log(rectTransform.sizeDelta);
+                    }
+                }
+                yield return new WaitForSeconds(0.5f);
+            }
+
+        }
     }
 }

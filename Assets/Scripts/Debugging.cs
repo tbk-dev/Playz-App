@@ -37,13 +37,16 @@ public class Debugging : MonoBehaviour
     [SerializeField]
     private InputField InputField_topic = null;
 
+    public Text UrlText = null;
+
     FirebaseMSGSet firebaseMSGSet;
 
     private void Awake()
     {
         instance = this;
         TokenFilePath = Path.Combine(Application.persistentDataPath, "userToken.txt");
-        logText1.text = debugmsg;
+
+        StartCoroutine(ShowLateLog());
     }
 
     WebViewSift webViewSift;
@@ -139,11 +142,11 @@ public class Debugging : MonoBehaviour
             writer.Write(token);
             writer.Close();
 
-            DebugLog($"File path : {TokenFilePath} {Environment.NewLine}token = {token}");
+            DebugLog($"File path : {TokenFilePath}{Environment.NewLine}token = {token}");
         }
         catch (Exception ex)
         {
-            DebugLog(ex.Message.ToString());
+            DebugLog($">>> SaveToken ERROR : {ex.Message.ToString()}");
         }
     }
 
@@ -199,7 +202,7 @@ public class Debugging : MonoBehaviour
     }
 
     [SerializeField]
-    private GameObject logView;
+    private GameObject logView = null;
     private string debugmsg = " ";
     bool ActiveLog = true;
     public void ShowLogView()
@@ -228,15 +231,23 @@ public class Debugging : MonoBehaviour
     const int kMaxLogSize = 16382;
 
     [SerializeField]
-    private ScrollRect scrollRect;
+    private ScrollRect scrollRect = null;
     // Output text to the debug log text field, as well as the console.
     public void DebugLog(string s)
     {
 #if UNITY_EDITOR
         Debug.Log($"Ulog >>> {s}");
+#elif UNITY_ANDROID
+        if ( PluginInit.instance == null )
+            return;
+        PluginInit.instance.LogUnity(s);
 #else
         Console.WriteLine($"Ulog >>> {s}");
 #endif
+        if (logText1 == null)
+        {
+            return;
+        }
 
         while (debugmsg.Length > kMaxLogSize)
         {
@@ -245,12 +256,56 @@ public class Debugging : MonoBehaviour
         }
 
         debugmsg += s + "\n";
-
         logText1.text = debugmsg;
+
 
         scrollRect.verticalNormalizedPosition = 0.0f;
     }
+    LoginAuth loginAuth = null;
+    public void GetloginAuth()
+    {
+        loginAuth = FindObjectOfType<SampleWebView>().loginAuth;
+        DebugLog($"access_token : {loginAuth.token.access_token}");
+        DebugLog($"loginAuth : {loginAuth.ToString()}");
+    }
+        
 
+    string lateLog;
+
+    public void GetCookies()
+    {
+        webViewSift.webViewObject.CallFromJS("Unity.call(document.cookie);");
+    }
+
+    public void Loglate(string s)
+    {
+        lateLog += s + "\n";
+    }
+
+    IEnumerator ShowLateLog()
+    {
+        while(true)
+        {
+            //while (lateLog.Length > kMaxLogSize)
+            //{
+            //    int index = lateLog.IndexOf("\n");
+            //    lateLog = lateLog.Substring(index + 1);
+            //}
+            if (!string.IsNullOrEmpty(lateLog))
+            {
+                string[] logArr = lateLog.Split('\n');  // 쉼표로 구분한다. 저장시에 쉼표로 구분하여 저장하였다.
+                lateLog = null;
+                for (int i = 0; i < logArr.Length; i++)
+                {
+                    if (!string.IsNullOrEmpty(logArr[i]))
+                        DebugLog($"latelog >> {logArr[i]}");
+                }
+            }
+
+            yield return new WaitForEndOfFrame();
+        }
+
+    }
 
 
 

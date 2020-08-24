@@ -8,7 +8,43 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:540513313812:android:814a34862d4edb6dabb301",
+        "mobilesdk_app_id": "1:540513313812:android:c6c725b7c08bdee8abb301",
+        "android_client_info": {
+          "package_name": "com.technoblood.kiwoozawebapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "540513313812-lco0joorr2ltng8kjnhbhr5rsimklt8f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAs9W0tpgKM2BZtL_3FCuPXWJsljHRQTRI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "540513313812-lco0joorr2ltng8kjnhbhr5rsimklt8f.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "540513313812-b9htc5c80agfeuremh65gbg5jh7bmj3l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "xx"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:540513313812:android:18db95e7a97bdaefabb301",
         "android_client_info": {
           "package_name": "com.technoblood.playzWebapp"
         }
@@ -32,10 +68,10 @@
               "client_type": 3
             },
             {
-              "client_id": "540513313812-qn1bv9emikff99q7j97mp5b4m5c2f9vu.apps.googleusercontent.com",
+              "client_id": "540513313812-b9htc5c80agfeuremh65gbg5jh7bmj3l.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.technoblood.playzWebapp"
+                "bundle_id": "xx"
               }
             }
           ]

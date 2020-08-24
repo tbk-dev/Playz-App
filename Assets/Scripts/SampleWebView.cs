@@ -18,18 +18,59 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
+using Newtonsoft.Json;
+using System;
 using System.Collections;
 using UnityEngine;
 #if UNITY_2018_4_OR_NEWER
 using UnityEngine.Networking;
 #endif
 using UnityEngine.UI;
+// Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse); 
+// Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse); 
+    public class Token    {
+        public string token_type { get; set; } 
+        public string access_token { get; set; } 
+        public int expires_in { get; set; } 
+        public string refresh_token { get; set; } 
+    }
+
+    public class LoginAuth
+{
+        public int member_no { get; set; } 
+        public Token token { get; set; } 
+        public string redirect { get; set; } 
+    }
 
 public class SampleWebView : MonoBehaviour
 {
-    public string Url;
+
+    enum LOGINSTATE
+    {
+        siteconnect,
+        login,
+        receivewaitjson,
+        complete,
+    }
+    //public string Url; = //http://www.kiwooza.com/
+    public string Url = "http://dev-playz.virtual-gate.co.kr";
     public Text status;
     public WebViewObject webViewObject;
+
+    public LoginAuth loginAuth;
+
+    LOGINSTATE STATE;
+    PluginInit plugin = null;
+    //todo 테스트용 삭제예정
+    public void Awake()
+    {
+        plugin = FindObjectOfType<PluginInit>();
+        if (plugin == null)
+        {
+            Debugging.instance.DebugLog("plugin == null");
+        }
+
+    }
 
     IEnumerator Start()
     {
@@ -37,27 +78,79 @@ public class SampleWebView : MonoBehaviour
         webViewObject.Init(
             cb: (msg) =>
             {
-                Debug.Log(string.Format("CallFromJS[{0}]", msg));
-                status.text = msg;
-                status.GetComponent<Animation>().Play();
+                Debugging.instance.DebugLog(string.Format("CallFromJS [ {0} ]", msg));
+                //status.text = msg;
+                //status.GetComponent<Animation>().Play();
+                if (STATE == LOGINSTATE.receivewaitjson)
+                {
+                    if(msg.Contains("token"))
+                    {
+                        try
+                        {
+                            Debugging.instance.DebugLog($"jsonSting : {msg}");
+                            loginAuth = JsonConvert.DeserializeObject<LoginAuth>(msg);
+                            STATE = LOGINSTATE.complete;
+                            webViewObject.EvaluateJS(@"window.location.replace('http://dev-playz.virtual-gate.co.kr');");
+                            Debugging.instance.DebugLog("location.replace");
+
+                            StartCoroutine(SendToken(loginAuth.member_no));
+                        }
+                        catch (Exception ex)
+                        {
+                            Debugging.instance.DebugLog($"jsonConvert file : {ex.Message}");
+
+                        }
+
+                        //window.location.assign('http://www.example.com');
+                    }
+                }
             },
             err: (msg) =>
             {
-                Debug.Log(string.Format("CallOnError[{0}]", msg));
-                status.text = msg;
-                status.GetComponent<Animation>().Play();
+                Debugging.instance.DebugLog(string.Format("CallOnError[{0}]", msg));
+                //status.text = msg;
+                //status.GetComponent<Animation>().Play();
+
             },
             started: (msg) =>
             {
-                Debug.Log(string.Format("CallOnStarted[{0}]", msg));
+                Debugging.instance.DebugLog(string.Format("CallOnStarted[{0}]", msg));
+
+                if (msg.Contains(@"member/login"))
+                {
+                    if (!msg.Contains("response_type=jwt"))
+                    {
+                        Debugging.instance.DebugLog("page redirect");
+                        webViewObject.LoadURL("http://dev-playz.virtual-gate.co.kr/member/login?response_type=jwt");
+                    }
+                }
             },
             hooked: (msg) =>
             {
-                Debug.Log(string.Format("CallOnHooked[{0}]", msg));
+                Debugging.instance.DebugLog(string.Format("CallOnHooked[{0}]", msg));
             },
             ld: (msg) =>
             {
-                Debug.Log(string.Format("CallOnLoaded[{0}]", msg));
+                Debugging.instance.DebugLog(string.Format("CallOnLoaded[{0}]", msg));
+
+                if (Debugging.instance.UrlText != null)
+                    Debugging.instance.UrlText.text = msg;
+
+                if (msg.Contains(@"response_type=jwt"))
+                {
+                    CallInnerText();
+                }
+                else if (msg.Contains(@"member/login"))
+                {
+                    var cookies = webViewObject.GetCookies("http://dev-playz.virtual-gate.co.kr");
+                    Debugging.instance.DebugLog($"cookies :: {cookies}");
+                }
+                else
+                {
+                    //outher
+                }
+
+
 #if UNITY_EDITOR_OSX || !UNITY_ANDROID
                 // NOTE: depending on the situation, you might prefer
                 // the 'iframe' approach.
@@ -112,11 +205,15 @@ public class SampleWebView : MonoBehaviour
         //webViewObject.SetURLPattern("", "^https://.*youtube.com", "^https://.*google.com");
         //webViewObject.SetMargins(5, 100, 5, Screen.height / 4);
 
-        webViewObject.SetMargins(0, 0, 0, (int)(Screen.height * 0.1));
+        if (Screen.width < Screen.height)
+            webViewObject.SetMargins(0, 0, 0, (int)(Screen.height * 0.1));
+        else
+            webViewObject.SetMargins(0, 0, 0, (int)(Screen.height - 192));
+
         //Debug.Log($"log >>> : height : {Screen.height} , 0.1 : {(int)(Screen.height * 0.1)}  차이 {Screen.height- (int)(Screen.height * 0.1)}  ");
         //Debug.Log($"log >>> : width : {Screen.width} , 0.1 : {(int)(Screen.width * 0.1)}  차이 {Screen.width - (int)(Screen.width * 0.1)}  ");
         webViewObject.SetVisibility(true);
-
+        
 #if !UNITY_WEBPLAYER && !UNITY_WEBGL
         if (Url.StartsWith("http"))
         {
@@ -177,6 +274,94 @@ public class SampleWebView : MonoBehaviour
 #endif
         yield break;
     }
+
+    public void CallInnerText()
+    {
+        //webViewObject.EvaluateJS("Unity.call('"+tag+">>> '+ document.documentElement.innerText.toString());");
+        webViewObject.EvaluateJS("Unity.call(document.documentElement.innerText.toString());");
+        STATE = LOGINSTATE.receivewaitjson;
+    }
+
+
+
+
+    string host = "http://dev-api.playz.virtual-gate.co.kr";
+    //http://dev-api.playz.virtual-gate.co.kr/member/100059/fcm/token
+    IEnumerator SendToken(int member_no)
+    {
+        string adress = $"{host}/member/{member_no}/fcm/token?t={DateTime.Now.Millisecond}";
+        Debugging.instance.DebugLog("::: adress " + adress);
+        Debugging.instance.DebugLog("::: member_no : " + member_no);
+        Debugging.instance.DebugLog("::: access_token : " + loginAuth.token.access_token);
+
+        string token = FindObjectOfType<FirebaseMSGSet>().userToken;
+        if(string.IsNullOrEmpty(token))
+        {
+            Debugging.instance.DebugLog($"::: IsNullOrEmpty(FCM_token)");
+            yield return null;
+        }
+
+        Debugging.instance.DebugLog($"::: FCM_token : {token}");
+
+        WWWForm form = new WWWForm();
+        form.AddField("token", token);
+        UnityWebRequest www = UnityWebRequest.Post(adress, form);
+
+        www.SetRequestHeader("Authorization", $"{loginAuth.token.token_type} {loginAuth.token.access_token}");
+        yield return www.SendWebRequest();
+
+        if (www.isNetworkError || www.isHttpError)
+        {
+            Debug.Log(www.error);
+            yield return null;
+        }
+
+        // Show results as text
+        //Debug.Log(www.downloadHandler.text);
+
+        // Or retrieve results as binary data
+        Debugging.instance.DebugLog("::: downloadHandler " + www.downloadHandler.text);
+        
+        byte[] results = www.downloadHandler.data;
+        ////string str = Encoding.Default.GetString(results);
+
+        //Debug.Log($"dataStr {str}");
+        //var JsonObject = ParsingJson2TeamInfoList(str);
+        //ActiveRequestEvent(JsonObject);
+
+        //    using (FileStream file = new FileStream(Application.dataPath + "\\urls33333333333333.txt", FileMode.Create, FileAccess.ReadWrite, FileShare.Read))   // 지정된 경로에 파일을 생성 
+        //    {
+        //        // 생성된 파일에 바이트배열로 저장한 컨텐츠 파일을 씀
+        //        file.Write(results, 0, results.Length);
+        //        Debug.LogError("!!! : " + results);
+        //    }
+        yield return null;
+    }
+
+    IEnumerator GetTimeTable(string suburl)
+    {
+
+        string adress = $"{suburl}?t={DateTime.Now.Millisecond}";
+
+        UnityWebRequest www = UnityWebRequest.Get(adress);
+        yield return www.SendWebRequest();
+        if (www.isNetworkError || www.isHttpError)
+        {
+            Debug.Log(www.error);
+            yield return null;
+        }
+
+        // Show results as text
+        //resultData = www.downloadHandler.text;
+
+        // Or retrieve results as binary data
+        var resultData = www.downloadHandler.data;
+        //string str = Encoding.UTF8.GetString(resultData);
+        //timeTableData = str.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+        yield return null;
+    }
+
 
     //void OnGUI()
     //{

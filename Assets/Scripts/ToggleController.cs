@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class ToggleController : MonoBehaviour
@@ -31,7 +32,7 @@ public class ToggleController : MonoBehaviour
     static float t = 0.0f;
 
     private bool switching = false;
-
+    public ToggleController toggleController;
 
     void Awake()
     {
@@ -75,16 +76,19 @@ public class ToggleController : MonoBehaviour
 
     void Update()
     {
-
         if (switching)
         {
             Toggle(isOn);
         }
     }
 
+    public delegate void EventHandler(bool isOn);
+    public event EventHandler ButtonEvent;
+
     public void DoYourStaff()
     {
         Debug.Log(isOn);
+        ButtonEvent(isOn);
     }
 
     public void Switching()
