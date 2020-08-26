@@ -62,6 +62,7 @@ public class SampleWebView : MonoBehaviour
     LOGINSTATE STATE;
     PluginInit plugin = null;
     //todo 테스트용 삭제예정
+
     public void Awake()
     {
         plugin = FindObjectOfType<PluginInit>();
@@ -93,7 +94,7 @@ public class SampleWebView : MonoBehaviour
                             webViewObject.EvaluateJS(@"window.location.replace('http://dev-playz.virtual-gate.co.kr');");
                             Debugging.instance.DebugLog("location.replace");
 
-                            StartCoroutine(SendToken(loginAuth.member_no));
+                            StartCoroutine(SendToken(REQUEST_TYPE.Post, loginAuth.member_no));
                         }
                         catch (Exception ex)
                         {
@@ -123,6 +124,9 @@ public class SampleWebView : MonoBehaviour
                         Debugging.instance.DebugLog("page redirect");
                         webViewObject.LoadURL("http://dev-playz.virtual-gate.co.kr/member/login?response_type=jwt");
                     }
+                } else if (msg.Contains(@"/member/logout"))
+                {
+                    StartCoroutine(SendToken(REQUEST_TYPE.Delete, loginAuth.member_no));
                 }
             },
             hooked: (msg) =>
@@ -193,7 +197,7 @@ public class SampleWebView : MonoBehaviour
                 ");
 #endif
 #endif
-                webViewObject.EvaluateJS(@"Unity.call('ua=' + navigator.userAgent)");
+                webViewObject.EvaluateJS(@"Unity.call('ua1 = ' + navigator.userAgent)");
 
             },
             //ua: "custom user agent string",
@@ -283,17 +287,19 @@ public class SampleWebView : MonoBehaviour
     }
 
 
+    public enum REQUEST_TYPE
+    {
+        Post,
+        Delete,
+        Get
+    }
+
 
 
     string host = "http://dev-api.playz.virtual-gate.co.kr";
     //http://dev-api.playz.virtual-gate.co.kr/member/100059/fcm/token
-    IEnumerator SendToken(int member_no)
+    IEnumerator SendToken(REQUEST_TYPE _TYPE, int member_no)
     {
-        string adress = $"{host}/member/{member_no}/fcm/token?t={DateTime.Now.Millisecond}";
-        Debugging.instance.DebugLog("::: adress " + adress);
-        Debugging.instance.DebugLog("::: member_no : " + member_no);
-        Debugging.instance.DebugLog("::: access_token : " + loginAuth.token.access_token);
-
         string token = FindObjectOfType<FirebaseMSGSet>().userToken;
         if(string.IsNullOrEmpty(token))
         {
@@ -301,11 +307,24 @@ public class SampleWebView : MonoBehaviour
             yield return null;
         }
 
+
+        string adress = $"{host}/member/{member_no}/fcm/token?t={DateTime.Now.Millisecond}";
+        Debugging.instance.DebugLog("::: adress " + adress);
+        Debugging.instance.DebugLog("::: access_token : " + loginAuth.token.access_token);
         Debugging.instance.DebugLog($"::: FCM_token : {token}");
 
         WWWForm form = new WWWForm();
         form.AddField("token", token);
-        UnityWebRequest www = UnityWebRequest.Post(adress, form);
+
+        UnityWebRequest www = new UnityWebRequest();
+        if (_TYPE == REQUEST_TYPE.Post)
+        {
+             www = UnityWebRequest.Post(adress, form);
+        }
+        else if( _TYPE == REQUEST_TYPE.Delete)
+        {
+            www = UnityWebRequest.Delete(adress);
+        }
 
         www.SetRequestHeader("Authorization", $"{loginAuth.token.token_type} {loginAuth.token.access_token}");
         yield return www.SendWebRequest();
@@ -337,6 +356,7 @@ public class SampleWebView : MonoBehaviour
         //    }
         yield return null;
     }
+
 
     IEnumerator GetTimeTable(string suburl)
     {

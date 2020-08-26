@@ -216,16 +216,7 @@ namespace DanielLochner.Assets.SimpleSideMenu
                     anchorMax = new Vector2(0, 1);
                     pivot = new Vector2(1, 0);
                     closedPosition = new Vector2(0, 0);
-                    //if (screenRotationState == SCREENROTATIONSTATE.portrait)
-                        openPosition = new Vector2(rectWidth, -1 * (rectheight - (rectheight * 0.1f)));
-                    //if (screenRotationState == SCREENROTATIONSTATE.landscapeLeft)
-                    //    openPosition = new Vector2(rectWidth, -1 * (rectheight - 192));
-
-                    //Debug.Log($"rectWidth : {rectWidth}   rectheight : {rectheight}    calculater : { -1 * (rectheight - (rectheight * 0.1f)) }");
-                    //Debug.Log("closedPosition :" + closedPosition);
-                    //Debug.Log("openPosition :" + openPosition);
-                    //Debug.Log("localPosition :" + rectTransform.localPosition);
-                    //Debug.Log("rect :" + rectTransform.rect);
+                    openPosition = new Vector2(rectWidth, -1 * (rectheight - (rectheight * 0.1f)));
                     break;
 
                 case Placement.Right:
@@ -235,7 +226,6 @@ namespace DanielLochner.Assets.SimpleSideMenu
                     closedPosition = new Vector2(0, rectTransform.localPosition.y);
                     openPosition = new Vector2(-1 * rectWidth, rectTransform.localPosition.y);
                     break;
-
 
                 case Placement.Top:
                     anchorMin = new Vector2(0.5f, 1);

@@ -68,6 +68,8 @@ public class PluginInit : MonoBehaviour
         using (AndroidJavaClass activityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
         {
             activityContext = activityClass.GetStatic<AndroidJavaObject>("currentActivity");
+            Debugging.instance.DebugLog("get activityContext");
+
         }
 
         //클래스 호출 패키지명 + 클래스명
@@ -79,42 +81,28 @@ public class PluginInit : MonoBehaviour
                 return;
             }
 
-            try
-            {
-                //플러그인의 싱글톤 static instance를 불러와줍니다.
-                fcmPluginInstance = FCMServiceClass.CallStatic<AndroidJavaObject>("instance");
+            //플러그인의 싱글톤 static instance를 불러와줍니다.
+            fcmPluginInstance = FCMServiceClass.CallStatic<AndroidJavaObject>("instance");
 
-                if (fcmPluginInstance == null)
-                {
-                    Debugging.instance.DebugLog("fcmPluginInstance is null");
-                    return;
-                }
-            }
-            catch (Exception ex)
+            if (fcmPluginInstance == null)
             {
+                Debugging.instance.DebugLog("fcmPluginInstance is null");
+                return;
             }
 
+            //플러그인의 싱글톤 static instance를 불러와줍니다.
+            fcmPluginInstance = FCMServiceClass.CallStatic<AndroidJavaObject>("getContext");
 
-            try
+            if (fcmPluginInstance == null)
             {
-                //플러그인의 싱글톤 static instance를 불러와줍니다.
-                fcmPluginInstance = FCMServiceClass.CallStatic<AndroidJavaObject>("getContext");
-
-                if (fcmPluginInstance == null)
-                {
-                    Debugging.instance.DebugLog("fcmPluginInstance is null");
-                    return;
-                }
-            }
-            catch (Exception ex)
-            {
+                Debugging.instance.DebugLog("fcmPluginInstance is null");
+                return;
             }
 
 
             //Context를 설정해줍니다.
             fcmPluginInstance.Call("setContext", activityContext);
-            Debugging.instance.DebugLog("set activityContext");
-
+            Debugging.instance.DebugLog("setContext activityContext");
         }
 
 
