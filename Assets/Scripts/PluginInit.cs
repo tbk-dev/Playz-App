@@ -52,13 +52,26 @@ public class PluginInit : MonoBehaviour
     {
         AttachAndroid();
 
-        InitSetting();
-
         webViewObject = FindObjectOfType<WebViewObject>();
+    }
+
+    public void OnEnable()
+    {
+        if (webViewObject  == null )
+            webViewObject = FindObjectOfType<WebViewObject>();
+
+        InitSetting();
 
         toggleReceiveInfo.ButtonEvent += ToggleReceiveInfo_ButtonEvent;
         toggleSoundNoti.ButtonEvent += ToggleSoundNoti_ButtonEvent;
         toggleVibNoti.ButtonEvent += ToggleVibNoti_ButtonEvent;
+    }
+
+    public void OnDisable()
+    {
+        toggleReceiveInfo.ButtonEvent -= ToggleReceiveInfo_ButtonEvent;
+        toggleSoundNoti.ButtonEvent -= ToggleSoundNoti_ButtonEvent;
+        toggleVibNoti.ButtonEvent -= ToggleVibNoti_ButtonEvent;
     }
 
     public void AttachAndroid()

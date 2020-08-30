@@ -15,6 +15,7 @@ public class WebViewSift : MonoBehaviour
     public SimpleSideMenu rightsimpleSideMenu;
     public SimpleSideMenu leftsimpleSideMenu;
 
+    public SettingMenu SettingMenuOBJ;
 
     void Start()
     {
@@ -31,7 +32,8 @@ public class WebViewSift : MonoBehaviour
     {
 
         //if (simpleSideMenu.TargetState == State.Closed)
-        if (rightsimpleSideMenu.TargetState == State.Closed)
+        //if (rightsimpleSideMenu.TargetState == State.Closed)
+        if (SettingMenuOBJ.isActiveMenu)
         {
             if (webViewObject.GetVisibility())
                 webViewObject.SetVisibility(false);
@@ -107,14 +109,14 @@ public class WebViewSift : MonoBehaviour
 
     public void CloseSideMenu()
     {
-        rightsimpleSideMenu.Close();
-        leftsimpleSideMenu.Open();
+        //rightsimpleSideMenu.Close();
+        //leftsimpleSideMenu.Open();
     }
 
     public void OpenSideMenu()
     {
-        rightsimpleSideMenu.Open();
-        leftsimpleSideMenu.Close();
+        //rightsimpleSideMenu.Open();
+        //leftsimpleSideMenu.Close();
     }
 
 
