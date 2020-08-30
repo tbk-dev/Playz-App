@@ -94,28 +94,49 @@ public class PluginInit : MonoBehaviour
                 return;
             }
 
-            //플러그인의 싱글톤 static instance를 불러와줍니다.
-            fcmPluginInstance = FCMServiceClass.CallStatic<AndroidJavaObject>("instance");
 
-            if (fcmPluginInstance == null)
+            try
             {
-                Debugging.instance.DebugLog("fcmPluginInstance is null");
-                return;
+                //플러그인의 싱글톤 static instance를 불러와줍니다.
+                fcmPluginInstance = FCMServiceClass.CallStatic<AndroidJavaObject>("instance");
+
+                if (fcmPluginInstance == null)
+                {
+                    Debugging.instance.DebugLog("fcmPluginInstance is null");
+                    return;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Debugging.instance.DebugLog($"instance is null {ex.Message}");
             }
 
-            //플러그인의 싱글톤 static instance를 불러와줍니다.
-            fcmPluginInstance = FCMServiceClass.CallStatic<AndroidJavaObject>("getContext");
 
-            if (fcmPluginInstance == null)
+
+            try
             {
-                Debugging.instance.DebugLog("fcmPluginInstance is null");
-                return;
+                //플러그인의 싱글톤 static instance를 불러와줍니다.
+                fcmPluginInstance = FCMServiceClass.CallStatic<AndroidJavaObject>("getContext");
+
+                if (fcmPluginInstance == null)
+                {
+                    Debugging.instance.DebugLog("fcmPluginInstance is null");
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debugging.instance.DebugLog($"getContext is null {ex.Message}");
             }
 
 
             //Context를 설정해줍니다.
-            fcmPluginInstance.Call("setContext", activityContext);
-            Debugging.instance.DebugLog("setContext activityContext");
+            if (fcmPluginInstance != null)
+            {
+                fcmPluginInstance.Call("setContext", activityContext);
+                Debugging.instance.DebugLog("setContext activityContext");
+            }
         }
 
 
@@ -279,14 +300,20 @@ public class PluginInit : MonoBehaviour
     private void SetPreferencBool(string prefKey, bool value)
     {
         if (fcmPluginInstance == null)
+        {
             Debugging.instance.DebugLog("fcmPluginInstance is null");
+            return;
+        }
 
         fcmPluginInstance.Call("setPreferenceBool", prefKey, value, activityContext);
     }
     private bool GetPreferenceBool(string prefKey)
     {
         if (fcmPluginInstance == null)
+        { 
             Debug.LogError("fcmPluginInstance is null");
+            return false;
+        }
 
         var preference = fcmPluginInstance.Call<bool>("getPreferenceBool", prefKey, activityContext);
         //유니티저장
@@ -300,14 +327,20 @@ public class PluginInit : MonoBehaviour
     private void SetPreferenceString(string prefKey, string value)
     {
         if (fcmPluginInstance == null)
+        {
             Debug.LogError("fcmPluginInstance is null");
+            return;
+        }
 
-        fcmPluginInstance.Call("setPreferenceString", prefKey, value, activityContext);
+    fcmPluginInstance.Call("setPreferenceString", prefKey, value, activityContext);
     }
     private string GetPreferenceString(string prefKey)
     {
         if (fcmPluginInstance == null)
+        { 
             Debug.LogError("fcmPluginInstance is null");
+            return null;
+        }
 
         var preference = fcmPluginInstance.Call<string>("getPreferenceString", prefKey, activityContext);
         //유니티저장
@@ -400,7 +433,10 @@ public class PluginInit : MonoBehaviour
         //activityContext.Call("runOnUiThread", new AndroidJavaRunnable(() =>
         //{
 
-        fcmPluginInstance.Call("LogUnity", msg);
+        if (fcmPluginInstance != null)
+        {
+            fcmPluginInstance.Call("LogUnity", msg);
+        }
 
         //}));
     }
