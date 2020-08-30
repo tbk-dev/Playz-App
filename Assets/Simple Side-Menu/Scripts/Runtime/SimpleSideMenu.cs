@@ -3,6 +3,7 @@
 // Author: Daniel Lochner
 
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -54,7 +55,11 @@ namespace DanielLochner.Assets.SimpleSideMenu
         {
             Left,
             Right,
+            Right2,
+            Right3,
             Top,
+            TopLeft,
+            TopRight,
             Bottom
         }
         public enum State
@@ -72,6 +77,8 @@ namespace DanielLochner.Assets.SimpleSideMenu
             if (Validate())
             {
                 Setup();
+
+                StartCoroutine(Rotate());
             }
             else
             {
@@ -82,7 +89,6 @@ namespace DanielLochner.Assets.SimpleSideMenu
         {
             OnStateUpdate();
             OnOverlayUpdate();
-            Rotate();
         }
         #if UNITY_EDITOR
         private void OnValidate()
@@ -183,38 +189,76 @@ namespace DanielLochner.Assets.SimpleSideMenu
             Vector2 anchorMin = Vector2.zero;
             Vector2 anchorMax = Vector2.zero;
             Vector2 pivot = Vector2.zero;
+
+            //float recPosx = rectTransform.localPosition.x * rectTransform.transform.parent.transform.localScale.x;
+            //float recPosy = rectTransform.localPosition.y * rectTransform.transform.parent.transform.localScale.y;
+            float rectWidth = rectTransform.rect.width;
+            float rectheight = rectTransform.rect.height;
+            float rectPosx = rectTransform.localPosition.x;
+            float rectPosy = rectTransform.localPosition.y;
+
             switch (placement)
             {
                 case Placement.Left:
                     anchorMin = new Vector2(0, 0.5f);
                     anchorMax = new Vector2(0, 0.5f);
                     pivot = new Vector2(1, 0.5f);
-                    closedPosition = new Vector2(0, rectTransform.localPosition.y);
-                    openPosition = new Vector2(rectTransform.rect.width, rectTransform.localPosition.y);
+                    closedPosition = new Vector2(0, rectPosy);
+                    openPosition = new Vector2(rectWidth, rectPosy);
                     break;
+
+                case Placement.TopLeft:
+                    anchorMin = new Vector2(0, 1);
+                    anchorMax = new Vector2(0, 1);
+                    pivot = new Vector2(1, 0);
+                    closedPosition = new Vector2(0, 0);
+                    openPosition = new Vector2(rectWidth, -1 * (rectheight - (rectheight * 0.1f)));
+                    break;
+
                 case Placement.Right:
                     anchorMin = new Vector2(1, 0.5f);
                     anchorMax = new Vector2(1, 0.5f);
                     pivot = new Vector2(0, 0.5f);
-                    closedPosition = new Vector2(0, rectTransform.localPosition.y);
-                    openPosition = new Vector2(-1 * rectTransform.rect.width, rectTransform.localPosition.y);
+                    closedPosition = new Vector2(0, rectPosy);
+                    openPosition = new Vector2(-1 * rectPosx, rectPosy);
+                    break;
+                case Placement.Right2:
+                    anchorMin = new Vector2(0,1);
+                    anchorMax = new Vector2(0,1);
+                    pivot = new Vector2(0, 1);
+
+                    closedPosition = new Vector2(0, 0);
+
+                    openPosition = new Vector2(rectWidth, 0);
                     break;
                 case Placement.Top:
                     anchorMin = new Vector2(0.5f, 1);
                     anchorMax = new Vector2(0.5f, 1);
                     pivot = new Vector2(0.5f, 0);
-                    closedPosition = new Vector2(rectTransform.localPosition.x, 0);
-                    openPosition = new Vector2(rectTransform.localPosition.x, -1 * rectTransform.rect.height);
+                    closedPosition = new Vector2(rectPosx, 0);
+                    openPosition = new Vector2(rectPosx, -1 * rectheight);
                     break;
+
+                case Placement.TopRight:
+                    anchorMin = new Vector2(1, 1f);
+                    anchorMax = new Vector2(1, 1f);
+                    pivot = new Vector2(0, 1f);
+                    closedPosition = new Vector2(0, rectheight - (rectheight * 0.1f));
+                    openPosition = new Vector2(-1 * rectWidth, 0);
+                    break;
+
                 case Placement.Bottom:
                     anchorMin = new Vector2(0.5f, 0);
                     anchorMax = new Vector2(0.5f, 0);
                     pivot = new Vector2(0.5f, 1);
-                    closedPosition = new Vector2(rectTransform.localPosition.x, 0);
-                    openPosition = new Vector2(rectTransform.localPosition.x, rectTransform.rect.height);
+                    closedPosition = new Vector2(rectPosx, 0);
+                    openPosition = new Vector2(rectPosx, rectheight);
                     break;
             }
-            rectTransform.sizeDelta = rectTransform.rect.size;
+
+            //rectTransform.sizeDelta = rectTransform.rect.size;
+            
+            //rectTransform.sizeDelta = new Vector2(Screen.width, (int)(Screen.height * 0.9));
             rectTransform.anchorMin = anchorMin;
             rectTransform.anchorMax = anchorMax;
             rectTransform.pivot = pivot;
@@ -391,45 +435,82 @@ namespace DanielLochner.Assets.SimpleSideMenu
         public void Close()
         {
             SetState(State.Closed);
-        }
+        }     
         #endregion
 
-        bool isPortrait = true;
-        public void Rotate()
+        enum SCREENROTATIONSTATE
         {
-            if (Screen.width < Screen.height)
-            {
-                if (!isPortrait)
-                {
-                    Debug.Log("Portrait mode");
-                    // Portrait mode
-                    isPortrait = true;
-                    rectTransform.sizeDelta = new Vector2(Screen.width, (int)(Screen.height * 0.9));
-                    var currentState = TargetState;
-                    Setup();
-                    TargetState = currentState;
-                    //rectTransform.ForceUpdateRectTransforms();/* = new Rect(0.0f, 0.0f, Screen.width, Screen.height);*/
-                }
-                   
-            }
-            else
-            {
-                if (isPortrait)
-                {
-                    Debug.Log("Landscape mode");
-                    // Landscape mode
-                    isPortrait = false;
-                    rectTransform.sizeDelta = new Vector2(Screen.width, (int)(Screen.height - 192));
-                    var currentState = TargetState;
-                    Setup();
-                    TargetState = currentState;
-
-                    //rectTransform.
-                    //controlArea = new Rect(0.0f, 0.0f, Screen.width * 0.5f, Screen.height);
-                    //logArea = new Rect(Screen.width * 0.5f, 0.0f, Screen.width * 0.5f, Screen.height);
-                }
-            }
+            init,
+            portrait,
+            landscapeLeft,
         }
 
+        SCREENROTATIONSTATE screenRotationState;
+        public int screenWidth = 0;
+        public int screenHeight = 0;
+
+        public IEnumerator Rotate()
+        {
+            while (true)
+            {
+                if (screenWidth == Screen.width || screenHeight == Screen.height)
+                    yield return null;
+                else
+                {
+                    var currentState = TargetState;
+
+                    // Portrait mode
+                    if (Screen.width < Screen.height)
+                    {
+                        //if (screenRotationState != SCREENROTATIONSTATE.portrait)
+                        {
+                            //Screenheight = Screen.height;
+                            //Screenwidth = Screen.width;
+
+                            //Debug.Log($"Not Portrait -- height { Screen.height}, width  { Screen.width}");
+                            screenRotationState = SCREENROTATIONSTATE.portrait;
+                            rectTransform.sizeDelta = canvas.GetComponent<RectTransform>().sizeDelta;
+
+                            //rectTransform.sizeDelta = new Vector2(Screenwidth/*Screen.width*/, (int)(Screenheight * 0.9));//(int)(Screen.height * 0.9));
+                            //rectTransform.sizeDelta = new Vector2(Screen.width, (int)(Screen.height * 0.9)); 
+
+                            rectTransform.sizeDelta = new Vector2(Screen.width, (int)(Screen.height * 0.9));
+
+                            //rectTransform.ForceUpdateRectTransforms();/* = new Rect(0.0f, 0.0f, Screen.width, Screen.height);*/
+                        }
+                    }
+                    else
+                    {
+                        //if (screenRotationState != SCREENROTATIONSTATE.landscapeLeft)
+                        {
+                            //Screenheight = Screen.width;
+                            //Screenwidth = Screen.height;
+
+                            //Debug.Log($"Not landscapeLeft --  height { Screen.height}, width  { Screen.width}");
+                            screenRotationState = SCREENROTATIONSTATE.landscapeLeft;
+                            rectTransform.sizeDelta = canvas.GetComponent<RectTransform>().sizeDelta;
+
+                            //rectTransform.sizeDelta = new Vector2(Screenwidth/*Screen.width*/, Screenheight - 192);//(int)(Screen.height - 192));
+                            //rectTransform.sizeDelta = new Vector2(Screenwidth, (int)(Screen.height - 192));
+
+                            rectTransform.sizeDelta = new Vector2(Screen.width, (int)(Screen.height * 0.9));
+
+                            //controlArea = new Rect(0.0f, 0.0f, Screen.width * 0.5f, Screen.height);
+                            //logArea = new Rect(Screen.width * 0.5f, 0.0f, Screen.width * 0.5f, Screen.height);
+                        }
+                    }
+
+                    Setup();
+                    TargetState = currentState;
+
+                    screenWidth =  Screen.width;
+                    screenHeight = Screen.height;
+                    Debug.Log(rectTransform.sizeDelta);
+
+                }
+                yield return new WaitForSeconds(0.5f);
+            }
+
+        }
     }
 }

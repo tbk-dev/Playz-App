@@ -9,36 +9,42 @@ public class WebViewSift : MonoBehaviour
 {
     public WebViewObject webViewObject { get; private set; }
     SimpleSideMenu simpleSideMenu;
+
+
+    public SimpleSideMenu right_simpleSideMenu;
     RectTransform rectTransform;
 
-    Vector2 closedPosition, openPosition, startPosition, releaseVelocity, menuSize;
+    public SimpleSideMenu left_simpleSideMenu;
+
+    public SettingMenu SettingMenuOBJ;
 
     void Start()
     {
-        startPosition = transform.position;
         webViewObject = FindObjectOfType<WebViewObject>();
 
-        simpleSideMenu = FindObjectOfType<SimpleSideMenu>();
-        rectTransform = simpleSideMenu.GetComponent<RectTransform>();
+        if (right_simpleSideMenu != null)
+            rectTransform = right_simpleSideMenu.GetComponent<RectTransform>();
 
-        closedPosition = new Vector2(640, rectTransform.localPosition.y);
-        openPosition = new Vector2(rectTransform.rect.width, rectTransform.localPosition.y);
     }
 
     void Update()
     {
-        //Vector2 targetPosition = (simpleSideMenu.TargetState == State.Closed) ? closedPosition : openPosition;
 
-        if (simpleSideMenu.TargetState == State.Closed)
+        //if (simpleSideMenu.TargetState == State.Closed)
+        //if (rightsimpleSideMenu.TargetState == State.Closed)
+        if (SettingMenuOBJ.isActiveMenu)
         {
-            webViewObject.SetVisibility(false);
+            if (webViewObject.GetVisibility())
+                webViewObject.SetVisibility(false);
         }
         else
         {
-            webViewObject.SetVisibility(true);
+            if(webViewObject.GetVisibility() == false)
+                webViewObject.SetVisibility(true);
         }
-
+        Debugging.instance.DebugLog("webViewObject : " + webViewObject.transform.position.ToString());
     }
+
 
     public void WebViewGoBack()
     {
@@ -50,29 +56,69 @@ public class WebViewSift : MonoBehaviour
         webViewObject.GoForward();
     }
 
-    public void WebViewGoHome()
-    {
-        webViewObject.LoadURL("http://www.kiwooza.com/");
-        //webViewObject.LoadURL(Url.Replace(" ", "%20"));
-    }
-    public void WebViewGoMap()
-    {
-        webViewObject.LoadURL("http://www.kiwooza.com/planet#direct");
-    }
-
-    public void WebViewGoWorkShop()
-    {
-        webViewObject.LoadURL("http://www.kiwooza.com/workshop");
-    }
-
-    public void WebViewGoNotice()
-    {
-        webViewObject.LoadURL("http://www.kiwooza.com/board/notice");
-    }
-
     public void WebViewReflash()
     {
         webViewObject.EvaluateJS("location.reload(true)");
     }
 
+    public void WebViewGoLogin()
+    {
+        webViewObject.LoadURL($"{mainhost}/member/login");
+    }
+    public void WebViewGoLoginjwtp()
+    {
+        webViewObject.LoadURL($"{mainhost}/member/login?response_type=jwt");
+    }
+
+
+
+
+    public string mainhost = "http://dev-playz.virtual-gate.co.kr";
+    //public string mainhost = "http://www.kiwooza.com/";
+    public void WebViewGoHome()
+    {
+        CloseSideMenu();
+
+        webViewObject.LoadURL(mainhost);
+        //webViewObject.LoadURL(Url.Replace(" ", "%20"));
+    }
+    public void WebViewGoMap()
+    {
+        CloseSideMenu();
+
+        //webViewObject.LoadURL($"{mainhost}/planet#direct");
+        webViewObject.LoadURL($"{mainhost}/lounge#direct");
+    }
+
+    public void WebViewGoWorkShop()
+    {
+        CloseSideMenu();
+
+        webViewObject.LoadURL($"{mainhost}/party");
+        //webViewObject.LoadURL($"{mainhost}/workshop");
+    }
+
+    public void WebViewGoNotice()
+    {
+        CloseSideMenu();
+
+        webViewObject.LoadURL($"{mainhost}/board/notice");
+    }
+
+
+
+    public void CloseSideMenu()
+    {
+        //right_simpleSideMenu.Close();
+        //left_simpleSideMenu.Open();
+    }
+
+    public void OpenSideMenu()
+    {
+        //right_simpleSideMenu.Open();
+        //left_simpleSideMenu.Close();
+    }
+
+
 }
+

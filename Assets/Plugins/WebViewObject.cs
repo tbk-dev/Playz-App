@@ -70,9 +70,9 @@ public class WebViewObject : MonoBehaviour
 #elif UNITY_IPHONE
     IntPtr webView;
 #elif UNITY_ANDROID
-    AndroidJavaObject webView = null;
+    AndroidJavaObject webView;
     
-    bool mVisibility = false;
+    bool mVisibility;
     bool mIsKeyboardVisible0;
     bool mIsKeyboardVisible;
     float mResumedTimestamp;
