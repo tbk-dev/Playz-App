@@ -9,11 +9,12 @@ public class WebViewSift : MonoBehaviour
 {
     public WebViewObject webViewObject { get; private set; }
     SimpleSideMenu simpleSideMenu;
+
+
+    public SimpleSideMenu right_simpleSideMenu;
     RectTransform rectTransform;
 
-
-    public SimpleSideMenu rightsimpleSideMenu;
-    public SimpleSideMenu leftsimpleSideMenu;
+    public SimpleSideMenu left_simpleSideMenu;
 
     public SettingMenu SettingMenuOBJ;
 
@@ -21,10 +22,8 @@ public class WebViewSift : MonoBehaviour
     {
         webViewObject = FindObjectOfType<WebViewObject>();
 
-        rightsimpleSideMenu = FindObjectOfType<SimpleSideMenu>();
-        rectTransform = rightsimpleSideMenu.GetComponent<RectTransform>();
-        //simpleSideMenu = FindObjectOfType<SimpleSideMenu>();
-        //rectTransform = simpleSideMenu.GetComponent<RectTransform>();
+        if (right_simpleSideMenu != null)
+            rectTransform = right_simpleSideMenu.GetComponent<RectTransform>();
 
     }
 
@@ -43,8 +42,9 @@ public class WebViewSift : MonoBehaviour
             if(webViewObject.GetVisibility() == false)
                 webViewObject.SetVisibility(true);
         }
-
+        Debugging.instance.DebugLog("webViewObject : " + webViewObject.transform.position.ToString());
     }
+
 
     public void WebViewGoBack()
     {
@@ -109,14 +109,14 @@ public class WebViewSift : MonoBehaviour
 
     public void CloseSideMenu()
     {
-        //rightsimpleSideMenu.Close();
-        //leftsimpleSideMenu.Open();
+        //right_simpleSideMenu.Close();
+        //left_simpleSideMenu.Open();
     }
 
     public void OpenSideMenu()
     {
-        //rightsimpleSideMenu.Open();
-        //leftsimpleSideMenu.Close();
+        //right_simpleSideMenu.Open();
+        //left_simpleSideMenu.Close();
     }
 
 
