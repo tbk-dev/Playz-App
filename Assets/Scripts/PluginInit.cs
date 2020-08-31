@@ -102,7 +102,7 @@ public class PluginInit : MonoBehaviour
 
                 if (fcmPluginInstance == null)
                 {
-                    Debugging.instance.DebugLog("fcmPluginInstance is null");
+                    Debugging.instance.DebugLog("instance fcmPluginInstance is null");
                     return;
 
                 }
@@ -121,7 +121,7 @@ public class PluginInit : MonoBehaviour
 
                 if (fcmPluginInstance == null)
                 {
-                    Debugging.instance.DebugLog("fcmPluginInstance is null");
+                    Debugging.instance.DebugLog("getContext fcmPluginInstance is null");
                     return;
                 }
             }
@@ -301,7 +301,7 @@ public class PluginInit : MonoBehaviour
     {
         if (fcmPluginInstance == null)
         {
-            Debugging.instance.DebugLog("fcmPluginInstance is null");
+            Debugging.instance.DebugLog("SetPreferencBool fcmPluginInstance is null");
             return;
         }
 
@@ -311,7 +311,7 @@ public class PluginInit : MonoBehaviour
     {
         if (fcmPluginInstance == null)
         { 
-            Debug.LogError("fcmPluginInstance is null");
+            Debug.LogError("GetPreferenceBool fcmPluginInstance is null");
             return false;
         }
 
@@ -328,7 +328,7 @@ public class PluginInit : MonoBehaviour
     {
         if (fcmPluginInstance == null)
         {
-            Debug.LogError("fcmPluginInstance is null");
+            Debug.LogError("SetPreferenceString fcmPluginInstance is null");
             return;
         }
 
@@ -338,7 +338,7 @@ public class PluginInit : MonoBehaviour
     {
         if (fcmPluginInstance == null)
         { 
-            Debug.LogError("fcmPluginInstance is null");
+            Debug.LogError("GetPreferenceString fcmPluginInstance is null");
             return null;
         }
 

@@ -22,6 +22,9 @@ public class WebViewSift : MonoBehaviour
     {
         webViewObject = FindObjectOfType<WebViewObject>();
 
+        if (webViewObject == null)
+            Debugging.instance.DebugLog("webViewObject is null");
+
         if (right_simpleSideMenu != null)
             rectTransform = right_simpleSideMenu.GetComponent<RectTransform>();
 
@@ -29,20 +32,24 @@ public class WebViewSift : MonoBehaviour
 
     void Update()
     {
-
         //if (simpleSideMenu.TargetState == State.Closed)
         //if (rightsimpleSideMenu.TargetState == State.Closed)
-        if (SettingMenuOBJ.isActiveMenu)
+
+        if (webViewObject != null)
         {
-            if (webViewObject.GetVisibility())
-                webViewObject.SetVisibility(false);
+            if (SettingMenuOBJ.isActiveMenu)
+            {
+                if (webViewObject.GetVisibility())
+                    //webViewObject.SetVisibility(false);
+                    webViewObject.SetVisibility(true);
+            }
+            else
+            {
+                if (webViewObject.GetVisibility() == false)
+                    webViewObject.SetVisibility(true);
+            }
+            Debugging.instance.DebugLog("webViewObject : " + webViewObject.transform.position.ToString());
         }
-        else
-        {
-            if(webViewObject.GetVisibility() == false)
-                webViewObject.SetVisibility(true);
-        }
-        Debugging.instance.DebugLog("webViewObject : " + webViewObject.transform.position.ToString());
     }
 
 

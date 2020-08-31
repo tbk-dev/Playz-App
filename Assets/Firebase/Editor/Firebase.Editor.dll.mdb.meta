@@ -4,7 +4,7 @@ labels:
 - gvh
 - gvh_rename_to_disable
 - gvh_targets-editor
-- gvh_version-6.15.1
+- gvh_version-6.15.2
 - gvhp_exportpath-Firebase/Editor/Firebase.Editor.dll.mdb
 DefaultImporter:
   externalObjects: {}

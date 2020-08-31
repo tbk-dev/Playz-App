@@ -1,9 +1,11 @@
 fileFormatVersion: 2
-guid: af346ba0f09c4d9488e81ac983d6ee42
+guid: c0ae98308ab0475a9583e1ea6e82ec65
 labels:
 - gvh
-TextScriptImporter:
-  externalObjects: {}
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+- gvh_version-6.15.2
+- gvhp_exportpath-Plugins/Android/AndroidManifest.xml
+timeCreated: 1480838400
+DefaultImporter:
+  userData:
+  assetBundleName:
+  assetBundleVariant:

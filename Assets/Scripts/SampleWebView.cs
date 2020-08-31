@@ -207,12 +207,13 @@ public class SampleWebView : MonoBehaviour
 #endif
         //webViewObject.SetAlertDialogEnabled(false);
         //webViewObject.SetURLPattern("", "^https://.*youtube.com", "^https://.*google.com");
-        //webViewObject.SetMargins(5, 100, 5, Screen.height / 4);
 
-        if (Screen.width < Screen.height)
-            webViewObject.SetMargins(0, 0, 0, (int)(Screen.height * 0.1));
-        else
-            webViewObject.SetMargins(0, 0, 0, (int)(Screen.height - 192));
+        webViewObject.SetMargins(5, 100, 5, Screen.height / 4);
+        //todo
+        //if (Screen.width < Screen.height)
+        //    webViewObject.SetMargins(0, 0, 0, (int)(Screen.height * 0.1));
+        //else
+        //    webViewObject.SetMargins(0, 0, 0, (int)(Screen.height - 192));
 
         //Debug.Log($"log >>> : height : {Screen.height} , 0.1 : {(int)(Screen.height * 0.1)}  차이 {Screen.height- (int)(Screen.height * 0.1)}  ");
         //Debug.Log($"log >>> : width : {Screen.width} , 0.1 : {(int)(Screen.width * 0.1)}  차이 {Screen.width - (int)(Screen.width * 0.1)}  ");

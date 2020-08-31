@@ -6,6 +6,6 @@
   <string name="project_id" translatable="false">playzwebview</string>
   <string name="google_api_key" translatable="false">AIzaSyAs9W0tpgKM2BZtL_3FCuPXWJsljHRQTRI</string>
   <string name="google_crash_reporting_api_key" translatable="false">AIzaSyAs9W0tpgKM2BZtL_3FCuPXWJsljHRQTRI</string>
-  <string name="google_app_id" translatable="false">1:540513313812:android:18db95e7a97bdaefabb301</string>
+  <string name="google_app_id" translatable="false">1:540513313812:android:1ab31094f5ae883eabb301</string>
   <string name="default_web_client_id" translatable="false">540513313812-lco0joorr2ltng8kjnhbhr5rsimklt8f.apps.googleusercontent.com</string>
 </resources>
