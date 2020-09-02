@@ -65,23 +65,24 @@ public class SampleWebView : MonoBehaviour
 
     public void Awake()
     {
-        plugin = FindObjectOfType<PluginInit>();
-        if (plugin == null)
-        {
-            Debugging.instance.DebugLog("plugin == null");
-        }
-
+        Debugging.instance.DebugLog("Awake");
+        //plugin = FindObjectOfType<PluginInit>();
+        //if (plugin == null)
+        //{
+        //    Debugging.instance.DebugLog("plugin == null");
+        //}
     }
 
     IEnumerator Start()
     {
+        Debugging.instance.DebugLog("Start  0  ");
         //webViewObject = (new GameObject("WebViewObject")).AddComponent<WebViewObject>();
         webViewObject.Init(
             cb: (msg) =>
             {
                 Debugging.instance.DebugLog(string.Format("CallFromJS [ {0} ]", msg));
-                //status.text = msg;
-                //status.GetComponent<Animation>().Play();
+                status.text = msg;
+                status.GetComponent<Animation>().Play();
                 if (STATE == LOGINSTATE.receivewaitjson)
                 {
                     if(msg.Contains("token"))
@@ -109,8 +110,8 @@ public class SampleWebView : MonoBehaviour
             err: (msg) =>
             {
                 Debugging.instance.DebugLog(string.Format("CallOnError[{0}]", msg));
-                //status.text = msg;
-                //status.GetComponent<Animation>().Play();
+                status.text = msg;
+                status.GetComponent<Animation>().Play();
 
             },
             started: (msg) =>
@@ -208,12 +209,10 @@ public class SampleWebView : MonoBehaviour
         //webViewObject.SetAlertDialogEnabled(false);
         //webViewObject.SetURLPattern("", "^https://.*youtube.com", "^https://.*google.com");
 
-        webViewObject.SetMargins(5, 100, 5, Screen.height / 4);
-        //todo
-        //if (Screen.width < Screen.height)
-        //    webViewObject.SetMargins(0, 0, 0, (int)(Screen.height * 0.1));
-        //else
-        //    webViewObject.SetMargins(0, 0, 0, (int)(Screen.height - 192));
+        if (Screen.width < Screen.height)
+            webViewObject.SetMargins(0, 0, 0, (int)(Screen.height * 0.1));
+        else
+            webViewObject.SetMargins(0, 0, 0, (int)(Screen.height - 192));
 
         //Debug.Log($"log >>> : height : {Screen.height} , 0.1 : {(int)(Screen.height * 0.1)}  차이 {Screen.height- (int)(Screen.height * 0.1)}  ");
         //Debug.Log($"log >>> : width : {Screen.width} , 0.1 : {(int)(Screen.width * 0.1)}  차이 {Screen.width - (int)(Screen.width * 0.1)}  ");
@@ -277,6 +276,7 @@ public class SampleWebView : MonoBehaviour
             "   };" +
             "});");
 #endif
+        Debugging.instance.DebugLog("Start  2  ");
         yield break;
     }
 

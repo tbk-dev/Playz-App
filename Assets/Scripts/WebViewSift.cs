@@ -40,8 +40,7 @@ public class WebViewSift : MonoBehaviour
             if (SettingMenuOBJ.isActiveMenu)
             {
                 if (webViewObject.GetVisibility())
-                    //webViewObject.SetVisibility(false);
-                    webViewObject.SetVisibility(true);
+                    webViewObject.SetVisibility(false);
             }
             else
             {
