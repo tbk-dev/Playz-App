@@ -1,10 +1,8 @@
 ﻿using Firebase.Extensions;
 using System;
 using System.Threading.Tasks;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using Firebase.Messaging;
 
 public class FirebaseMSGSet : MonoBehaviour
