@@ -21,6 +21,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections;
+using System.Net.Http;
 using UnityEngine;
 #if UNITY_2018_4_OR_NEWER
 using UnityEngine.Networking;
@@ -60,18 +61,6 @@ public class SampleWebView : MonoBehaviour
     public LoginAuth loginAuth;
 
     LOGINSTATE STATE;
-    PluginInit plugin = null;
-    //todo 테스트용 삭제예정
-
-    public void Awake()
-    {
-        Debugging.instance.DebugLog("Awake");
-        //plugin = FindObjectOfType<PluginInit>();
-        //if (plugin == null)
-        //{
-        //    Debugging.instance.DebugLog("plugin == null");
-        //}
-    }
 
     IEnumerator Start()
     {
@@ -127,6 +116,7 @@ public class SampleWebView : MonoBehaviour
                     }
                 } else if (msg.Contains(@"/member/logout"))
                 {
+                    StartCoroutine(SendToken(REQUEST_TYPE.Post, loginAuth.member_no));
                     StartCoroutine(SendToken(REQUEST_TYPE.Delete, loginAuth.member_no));
                 }
             },
@@ -294,7 +284,6 @@ public class SampleWebView : MonoBehaviour
         Delete,
         Get
     }
-
 
 
     string host = "http://dev-api.playz.virtual-gate.co.kr";
