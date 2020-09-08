@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Lean.Localization;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -50,14 +52,15 @@ public class PluginInit : MonoBehaviour
 
     public void Start()
     {
+        webViewObject = FindObjectOfType<WebViewObject>();
+
         AttachAndroid();
 
-        webViewObject = FindObjectOfType<WebViewObject>();
     }
 
     public void OnEnable()
     {
-        if (webViewObject  == null )
+        if (webViewObject == null)
             webViewObject = FindObjectOfType<WebViewObject>();
 
         InitSetting();
@@ -74,79 +77,353 @@ public class PluginInit : MonoBehaviour
         toggleVibNoti.ButtonEvent -= ToggleVibNoti_ButtonEvent;
     }
 
+    private AndroidJavaObject JavaObjectCallStaticObject(AndroidJavaObject androidJavaObject, string objectName)
+    {
+        try
+        {
+            var result = androidJavaObject.CallStatic<AndroidJavaObject>(objectName);
+            Debugging.instance.DebugLog("### call ### call ### call ### call");
+            return result;
+        }
+        catch (Exception)
+        {
+            Debugging.instance.DebugLog($"### JavaClassCallStaticObject is null");
+        }
+        return null;
+    }
+
+    private AndroidJavaObject JavaObjectCallObject(AndroidJavaObject androidJavaObject, string objectName)
+    {
+        try
+        {
+
+            var result = androidJavaObject.Call<AndroidJavaObject>(objectName);
+            Debugging.instance.DebugLog("### call ### call ### call ### call");
+            return result;
+        }
+        catch (Exception)
+        {
+            Debugging.instance.DebugLog($"### JavaClassCallObject is null");
+        }
+        return null;
+    }
+
+    private AndroidJavaObject JavaClassCallStaticObject(AndroidJavaClass androidJavaClass, string objectName)
+    {
+        try
+        {
+            var result = androidJavaClass.CallStatic<AndroidJavaObject>(objectName);
+            Debugging.instance.DebugLog("### call ### call ### call ### call");
+            return result;
+        }
+        catch (Exception)
+        {
+            Debugging.instance.DebugLog($"### JavaClassCallStaticObject is null");
+        }
+        return null;
+    }
+
+    private AndroidJavaObject JavaClassCallObject(AndroidJavaClass androidJavaClass, string objectName)
+    {
+        try
+        {
+
+            var result = androidJavaClass.Call<AndroidJavaObject>(objectName);
+            Debugging.instance.DebugLog("### call ### call ### call ### call");
+            return result;
+        }
+        catch (Exception)
+        {
+            Debugging.instance.DebugLog($"### JavaClassCallObject is null");
+        }
+        return null;
+    }
+
+
+
+    private AndroidJavaClass JavaObjectCallStaticClass(AndroidJavaObject androidJavaObject, string className)
+    {
+        try
+        {
+            var result = androidJavaObject.CallStatic<AndroidJavaClass>(className);
+            Debugging.instance.DebugLog("### call ### call ### call ### call");
+            return result;
+
+        }
+        catch (Exception)
+        {
+            Debugging.instance.DebugLog($"### JavaClassCallStaticClass is null");
+        }
+        return null;
+    }
+
+    private AndroidJavaClass JavaObjectCallClass(AndroidJavaObject androidJavaObject, string className)
+    {
+        try
+        {
+
+            var result = androidJavaObject.Call<AndroidJavaClass>(className);
+            Debugging.instance.DebugLog("### call ### call ### call ### call");
+            return result;
+        }
+        catch (Exception)
+        {
+            Debugging.instance.DebugLog($"### JavaClassCallClass is null");
+        }
+        return null;
+    }
+
+    private AndroidJavaClass JavaClassCallStaticClass(AndroidJavaClass androidJavaClass, string className)
+    {
+        try
+        {
+            var result = androidJavaClass.CallStatic<AndroidJavaClass>(className);
+            Debugging.instance.DebugLog("### call ### call ### call ### call");
+            return result;
+        }
+        catch (Exception)
+        {
+            Debugging.instance.DebugLog($"### JavaClassCallStaticClass is null");
+        }
+        return null;
+    }
+
+    private AndroidJavaClass JavaClassCallClass(AndroidJavaClass androidJavaClass, string className)
+    {
+        try
+        {
+            var result = androidJavaClass.Call<AndroidJavaClass>(className);
+            Debugging.instance.DebugLog("### call ### call ### call ### call");
+            return result;
+        }
+        catch (Exception)
+        {
+            Debugging.instance.DebugLog($"### JavaClassCallClass is null");
+        }
+        return null;
+    }
+
+
     public void AttachAndroid()
     {
         //Debugging.instance.DebugLog($"run AttachAndroid");
         //plugin의 context를 설정하기 위해 유니티 자체의 UnityPlayerActivity를 가져온다
-        using (AndroidJavaClass activityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
-        {
-            activityContext = activityClass.GetStatic<AndroidJavaObject>("currentActivity");
-            Debugging.instance.DebugLog("get activityContext");
+        //GetAndroidJavaClass 로 대체
 
+        try
+        {
+            using (AndroidJavaClass activityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+            {
+                activityContext = activityClass.GetStatic<AndroidJavaObject>("currentActivity");
+
+                if (activityClass == null)
+                {
+                    Debugging.instance.DebugLog($"### activityClass is null");
+                    return;
+                }
+            }
+            }
+        catch (Exception ex)
+        {
+            Debugging.instance.DebugLog($"currentActivity is null {ex.Message}");
         }
+
+
+        #region 오브젝트로 콜 테스트
+        //string packageName = "com.technoblood.playzWebapp.FCMService";   
+        string packageName = "com.technoblood.fmcexplugin.fcmplugin";
+
+        var packageObject = GetAndroidJavaObject(packageName);
+        var packageClass = GetAndroidJavaClass(packageName);
+
+
+
+
+        var javaObjectCallStaticObject = JavaObjectCallStaticObject(packageObject, "instance");
+        var javaObjectCallObject = JavaObjectCallObject(packageObject, "instance");
+        var javaClassCallStaticObject = JavaClassCallStaticObject(packageClass, "instance");
+        var javaClassCallObject = JavaClassCallObject(packageClass, "instance");
+
+
+        var javaObjectCallStaticClass = JavaObjectCallStaticClass(packageObject, "instance");
+        var javaObjectCallClass = JavaObjectCallClass(packageObject, "instance");
+        var javaClassCallStaticClass = JavaClassCallStaticClass(packageClass, "instance");
+        var javaClassCallClass = JavaClassCallClass(packageClass, "instance");
+
+
+        try
+        {
+            var callstatic = packageObject.CallStatic<dynamic>("instance");
+        }
+        catch (Exception)
+        {
+            Debugging.instance.DebugLog($"callstatic");
+        }
+        try
+        {
+            var call = packageObject.Call<dynamic>("instance");
+        }
+        catch (Exception)
+        {
+            Debugging.instance.DebugLog($"call");
+        }
+
+        try
+        {
+            packageClass.CallStatic("setContext", activityContext);
+        }
+        catch (Exception)
+        {
+            Debugging.instance.DebugLog($"packageClass.CallStatic");
+        }
+
+        try
+        {
+            packageObject.Call("setContext", activityContext);
+        }
+        catch (Exception)
+        {
+            Debugging.instance.DebugLog($"packageObject.Call");
+        }
+
+        try
+        {
+            packageClass.Call("setContext", activityContext);
+        }
+        catch (Exception)
+        {
+            Debugging.instance.DebugLog($"packageClass.Call");
+        }
+
+        try
+        {
+            packageObject.CallStatic("setContext", activityContext);
+        }
+        catch (Exception)
+        {
+            Debugging.instance.DebugLog($"packageObject.CallStatic");
+        }
+
+
+
+        var javaClassCallStaticClass2 = JavaClassCallStaticClass(GetAndroidJavaClass(packageName), "getContext");
+
+        #endregion
+
+
+
+
+
+        //try
+        //{
+        //    if (fcmOjbect != null)
+        //        fcmOjbect.Call("setContext", activityContext);
+        //}
+        //catch (Exception)
+        //{
+        //    Debugging.instance.DebugLog("### setContext is null");
+
+        //}
+
+
+
+
 
         //클래스 호출 패키지명 + 클래스명
-        using (FCMServiceClass = new AndroidJavaClass("com.technoblood.playzWebapp.FCMService"))
+        //GetAndroidJavaClass 로 ㄷ ㅐ체
+
+
+        //Context를 설정해줍니다.
+        if (fcmPluginInstance != null)
         {
-            if (FCMServiceClass == null)
-            {
-                Debugging.instance.DebugLog($"FCMServiceClass is null");
-                return;
-            }
-
-
-            try
-            {
-                //플러그인의 싱글톤 static instance를 불러와줍니다.
-                fcmPluginInstance = FCMServiceClass.CallStatic<AndroidJavaObject>("instance");
-
-                if (fcmPluginInstance == null)
-                {
-                    Debugging.instance.DebugLog("instance fcmPluginInstance is null");
-                    return;
-
-                }
-            }
-            catch (Exception ex)
-            {
-                Debugging.instance.DebugLog($"instance is null {ex.Message}");
-            }
-
-
-
-            try
-            {
-                //플러그인의 싱글톤 static instance를 불러와줍니다.
-                fcmPluginInstance = FCMServiceClass.CallStatic<AndroidJavaObject>("getContext");
-
-                if (fcmPluginInstance == null)
-                {
-                    Debugging.instance.DebugLog("getContext fcmPluginInstance is null");
-                    return;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debugging.instance.DebugLog($"getContext is null {ex.Message}");
-            }
-
-
-            //Context를 설정해줍니다.
-            if (fcmPluginInstance != null)
-            {
-                fcmPluginInstance.Call("setContext", activityContext);
-                Debugging.instance.DebugLog("setContext activityContext");
-            }
+            fcmPluginInstance.Call("setContext", activityContext);
+            Debugging.instance.DebugLog("setContext activityContext");
         }
-
-
         Debugging.instance.DebugLog($"end AttachAndroid");
     }
 
+
+    public AndroidJavaClass GetAndroidJavaClass(string javaClass)
+    {
+        try
+        {
+            using (var androidJavaClass = new AndroidJavaClass(javaClass))
+            {
+                return androidJavaClass;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debugging.instance.DebugLog($"GetAndroidJavaClass is {ex.Message}");
+        }
+        return null;
+    }
+
+    public AndroidJavaObject GetAndroidJavaObject(string javaObject)
+    {
+        try
+        {
+            using (var androidJavaObject = new AndroidJavaObject(javaObject))
+            {
+                return androidJavaObject;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debugging.instance.DebugLog($"GetAndroidJavaObject is {ex.Message}");
+        }
+        return null;
+    }
+
+
+
+    public void LangBtn()
+    {
+
+        //var LeanLocalization = FindObjectOfType<LeanLocalization>();
+
+        if (LeanLocalization.CurrentLanguage == "Korean")
+        {
+            LeanLocalization.CurrentLanguage = "VietNam";
+        }
+        else if (LeanLocalization.CurrentLanguage == "VietNam")
+        {
+            LeanLocalization.CurrentLanguage = "English";
+        }
+        else
+        {
+            LeanLocalization.CurrentLanguage = "Korean";
+        }
+
+        LeanLocalization.UpdateTranslations();
+    }
+
+
+
     private void InitSetting()
     {
-        Debugging.instance.DebugLog("run InitSetting");
+        Debug.Log("log run InitSetting");
 
+        if (Debugging.instance == null)
+        { 
+            Debug.Log("Debugging.instance is null");
+            Debug.Log("Debugging.instance is null");
+            Debug.Log("Debugging.instance is null");
+            Debug.Log("Debugging.instance is null");
+            Debug.Log("Debugging.instance is null");
+            Debug.Log("Debugging.instance is null");
+        }
+        else
+        {
+            Debug.Log("attach Debugging.instance");
+            Debug.Log("attach Debugging.instance");
+            Debug.Log("attach Debugging.instance");
+            Debug.Log("attach Debugging.instance");
+            Debug.Log("attach Debugging.instance");
+
+        }
+
+        Debugging.instance.DebugLog("run InitSetting");
         //receiveInfoSlider.value = Convert.ToSingle(GetPreferenceBool(receiveInfo));
         //soundNotiSlider.value = Convert.ToSingle(GetPreferenceBool(soundNoti));
         //vibNotiSlider.value = Convert.ToSingle(GetPreferenceBool(vibNoti));
@@ -161,6 +438,7 @@ public class PluginInit : MonoBehaviour
         toggleVibNoti.isOn = GetPreferenceBool(vibNoti);
         Debugging.instance.DebugLog($"toggleVibNoti : {toggleVibNoti.isOn}");
 
+        Debug.Log("log end InitSetting");
         Debugging.instance.DebugLog($"end InitSetting");
     }
 
@@ -301,7 +579,7 @@ public class PluginInit : MonoBehaviour
     {
         if (fcmPluginInstance == null)
         {
-            Debugging.instance.DebugLog("SetPreferencBool fcmPluginInstance is null");
+            Debugging.instance.DebugLog("SetPreferencBool Plugin is null");
             return;
         }
 
@@ -310,8 +588,8 @@ public class PluginInit : MonoBehaviour
     private bool GetPreferenceBool(string prefKey)
     {
         if (fcmPluginInstance == null)
-        { 
-            Debug.LogError("GetPreferenceBool fcmPluginInstance is null");
+        {
+            Debugging.instance.DebugLog("GetPreferenceBool Plugin is null 1");
             return false;
         }
 
@@ -319,8 +597,8 @@ public class PluginInit : MonoBehaviour
         //유니티저장
         //PlayerPrefs.SetString(DeviceIdKey, preference);
         //PlayerPrefs.Save();
-        
-        Console.WriteLine($"preference {prefKey} val : {preference}");
+
+        Debugging.instance.DebugLog($"preference {prefKey} val : {preference}");
         return preference;
     }
 
@@ -328,17 +606,17 @@ public class PluginInit : MonoBehaviour
     {
         if (fcmPluginInstance == null)
         {
-            Debug.LogError("SetPreferenceString fcmPluginInstance is null");
+            Debugging.instance.DebugLog("SetPreferenceString Plugin is null");
             return;
         }
 
-    fcmPluginInstance.Call("setPreferenceString", prefKey, value, activityContext);
+        fcmPluginInstance.Call("setPreferenceString", prefKey, value, activityContext);
     }
     private string GetPreferenceString(string prefKey)
     {
         if (fcmPluginInstance == null)
-        { 
-            Debug.LogError("GetPreferenceString fcmPluginInstance is null");
+        {
+            Debugging.instance.DebugLog("GetPreferenceString Plugin is null");
             return null;
         }
 
@@ -347,7 +625,7 @@ public class PluginInit : MonoBehaviour
         //PlayerPrefs.SetString(DeviceIdKey, savedPreference);
         //PlayerPrefs.Save();
 
-        Console.WriteLine($"preference {prefKey} val : {preference}");
+        Debugging.instance.DebugLog($"preference {prefKey} val : {preference}");
         return preference;
     }
 
@@ -372,7 +650,7 @@ public class PluginInit : MonoBehaviour
 
         Debugging.instance.DebugLog($"receiveInfo result {result}");
     }
-    
+
     public void SwitchSoundOption(float option)
     {
         Debugging.instance.DebugLog(" SwitchSoundOption");
@@ -404,7 +682,7 @@ public class PluginInit : MonoBehaviour
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-     
+
     public void ShowToastMessage(string msg, int duration = 0)
     {
         //Toast는 안드로이드의 UiThread를 사용하기때문에 
@@ -437,6 +715,10 @@ public class PluginInit : MonoBehaviour
         {
             fcmPluginInstance.Call("LogUnity", msg);
         }
+        else
+        {
+            Debug.LogError($"notWorkPluginLog >>> {msg}");
+        }
 
         //}));
     }
@@ -457,7 +739,14 @@ public class PluginInit : MonoBehaviour
 
     IEnumerator QuitApp()
     {
-        ShowToastMessage("Quit?", 500);
+        try
+        {
+            ShowToastMessage("종료하시겠습니까?", 400);
+        }
+        catch (Exception ex)
+        {
+            Debugging.instance.DebugLog($"QuitApp {ex.Message}");
+        }
         waitQuit = true;
         yield return new WaitForSeconds(0.5f);
         waitQuit = false;

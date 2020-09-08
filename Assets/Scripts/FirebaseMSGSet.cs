@@ -27,7 +27,7 @@ public class FirebaseMSGSet : MonoBehaviour
 
     public void CheckAndFixDependencies()
     {
-        Debugging.instance.Loglate("CheckAndFixDependencies");
+        Debugging.instance.Loglate("Start Firebase Messaging CheckAndFixDependencies");
         //Firebase.FirebeApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
         Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
         {
@@ -137,6 +137,7 @@ public class FirebaseMSGSet : MonoBehaviour
 
     public void UnSubscribeTopic(string topic)
     {
+        Debug.Log($"Start  Firebase Messaging UnSubscribeTopic");
         bool isAction = false;
 
         Firebase.Messaging.FirebaseMessaging.UnsubscribeAsync(topic).ContinueWithOnMainThread(
@@ -211,6 +212,7 @@ public class FirebaseMSGSet : MonoBehaviour
 
     public void ToggleTokenOnInit()
     {
+        Debug.Log($"BottonToggleTokenOnInit");
         bool newValue = !FirebaseMessaging.TokenRegistrationOnInitEnabled;
         FirebaseMessaging.TokenRegistrationOnInitEnabled = newValue;
         Debugging.instance.Loglate("Set TokenRegistrationOnInitEnabled to " + newValue);
@@ -258,6 +260,24 @@ public class FirebaseMSGSet : MonoBehaviour
     {
         Firebase.Messaging.FirebaseMessaging.MessageReceived -= OnMessageReceived;
         Firebase.Messaging.FirebaseMessaging.TokenReceived -= OnTokenReceived;
+    }
+
+    Firebase.DependencyStatus lastStatus;
+    public void LogDependencyStatus()
+    {
+        Debugging.instance.DebugLog("dependency status: " + dependencyStatus.ToString());
+        //while (true)
+        {
+            if (lastStatus != dependencyStatus)
+            {
+                //DebugLog("One or more Firebase dependencies are not present.");
+                //DebugLog("Current dependency status: " + firebaseMSGSet.dependencyStatus.ToString());
+
+                lastStatus = dependencyStatus;
+                Debugging.instance.DebugLog("change dependency status: " + dependencyStatus.ToString());
+            }
+            //yield return new WaitForSeconds(1);
+        }
     }
 
 

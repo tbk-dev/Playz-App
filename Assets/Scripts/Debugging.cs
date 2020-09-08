@@ -1,11 +1,6 @@
-﻿using Firebase.Extensions;
-using Firebase.Messaging;
-using Lean.Localization;
-using System;
+﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,6 +19,20 @@ public class Debugging : MonoBehaviour
                 if (instance == null)
                 {
                     Debug.LogError("debugging is null");
+                    Debug.LogError("debugging is null");
+                    Debug.LogError("debugging is null");
+                    Debug.LogError("debugging is null");
+                    Debug.LogError("debugging is null");
+                    Debug.LogError("debugging is null");
+                    Debug.LogError("debugging is null");
+                    Debug.LogError("debugging is null");
+                    Debug.LogError("debugging is null");
+                    Debug.LogError("debugging is null");
+                    Debug.LogError("debugging is null");
+                    Debug.LogError("debugging is null");
+                    Debug.LogError("debugging is null");
+                    Debug.LogError("debugging is null");
+                    Debug.LogError("debugging is null");
                     //instance = new Debugging();
                 }
                 return instance;
@@ -39,7 +48,6 @@ public class Debugging : MonoBehaviour
 
     public Text UrlText = null;
 
-    FirebaseMSGSet firebaseMSGSet;
 
     private void Awake()
     {
@@ -49,22 +57,11 @@ public class Debugging : MonoBehaviour
         StartCoroutine(ShowLateLog());
     }
 
-    WebViewSift webViewSift;
 
     // Start is called before the first frame update
     void Start()
     {
-        firebaseMSGSet = FindObjectOfType<FirebaseMSGSet>();
-        webViewSift = FindObjectOfType<WebViewSift>();
-
-        if (firebaseMSGSet == null)
-            DebugLog("firebaseMSGSet null");
-
-        if (webViewSift == null)
-            DebugLog("webViewSift null");
-
         //StartCoroutine(BottonLogDependencyStatus());
-
     }
 
     private void Update()
@@ -72,60 +69,29 @@ public class Debugging : MonoBehaviour
     }
 
 
-    Firebase.DependencyStatus lastStatus;
-
-    //public IEnumerator BtnDependencyStatus()
     public void BtnDependencyStatus()
     {
-        DebugLog("dependency status: " + firebaseMSGSet.dependencyStatus.ToString());
-        //while (true)
-        {
-            if (lastStatus != firebaseMSGSet.dependencyStatus)
-            {
-                //DebugLog("One or more Firebase dependencies are not present.");
-                //DebugLog("Current dependency status: " + firebaseMSGSet.dependencyStatus.ToString());
-
-                lastStatus = firebaseMSGSet.dependencyStatus;
-                DebugLog("change dependency status: " + firebaseMSGSet.dependencyStatus.ToString());
-            }
-            //yield return new WaitForSeconds(1);
-        }
+        FindObjectOfType<FirebaseMSGSet>().LogDependencyStatus();
     }
 
     public void BtnToggleTokenOnInit()
     {
-        Debug.Log($"BottonToggleTokenOnInit");
-        firebaseMSGSet.ToggleTokenOnInit();
-
+        FindObjectOfType<FirebaseMSGSet>().ToggleTokenOnInit();
     }
 
     public void BtnSubscribe()
     {
-        Debug.Log($"BottonSubscribe");
-        firebaseMSGSet.SubscribeTopic(InputField_topic.text);
+        FindObjectOfType<FirebaseMSGSet>().SubscribeTopic(InputField_topic.text);
     }
 
     public void BtnUnsubscribe()
     {
-        Debug.Log($"BottonUnsubscribe");
-        firebaseMSGSet.UnSubscribeTopic(InputField_topic.text);
-    }
-
-    public void BtnTeststart()
-    {
-        Debug.Log($"Teststart");
-        webViewSift.webViewObject.CallOnStarted("http://dev-playz.virtual-gate.co.kr/member/login?response_type=jwt");
-    }
-
-    public void BtnTestload()
-    {
-        Debug.Log($"Testload");
-        webViewSift.webViewObject.CallOnLoaded("http://dev-playz.virtual-gate.co.kr/member/login?response_type=jwt");
+        FindObjectOfType<FirebaseMSGSet>().UnSubscribeTopic(InputField_topic.text);
     }
 
     public void BtnCheckAndFixDependencies()
     {
-        firebaseMSGSet.CheckAndFixDependencies();
+        FindObjectOfType<FirebaseMSGSet>().CheckAndFixDependencies();
     }
 
 
@@ -183,22 +149,7 @@ public class Debugging : MonoBehaviour
 
     public void LangBtn()
     {
-        //var lean = FindObjectOfType<LeanLocalization>();
-
-        if (LeanLocalization.CurrentLanguage == "Korean")
-        {
-            LeanLocalization.CurrentLanguage = "VietNam";
-        }
-        else if (LeanLocalization.CurrentLanguage == "VietNam")
-        {
-            LeanLocalization.CurrentLanguage = "English";
-        }
-        else
-        {
-            LeanLocalization.CurrentLanguage = "Korean";
-        }
-
-        LeanLocalization.UpdateTranslations();
+        FindObjectOfType<PluginInit>()?.LangBtn();
     }
 
     [SerializeField]
@@ -238,8 +189,11 @@ public class Debugging : MonoBehaviour
 #if UNITY_EDITOR
         Debug.Log($"Ulog >>> {s}");
 #elif UNITY_ANDROID
-        if ( PluginInit.instance == null )
+        if (PluginInit.instance == null)
+        {
+            Debug.LogError($"can not print LogMessage PluginInit.instance is null");
             return;
+        }
         PluginInit.instance.LogUnity(s);
 #else
         Console.WriteLine($"Ulog >>> {s}");
@@ -261,10 +215,10 @@ public class Debugging : MonoBehaviour
 
         scrollRect.verticalNormalizedPosition = 0.0f;
     }
-    LoginAuth loginAuth = null;
+
     public void GetloginAuth()
     {
-        loginAuth = FindObjectOfType<SampleWebView>().loginAuth;
+        var loginAuth = FindObjectOfType<SampleWebView>().loginAuth;
         DebugLog($"access_token : {loginAuth.token.access_token}");
         DebugLog($"loginAuth : {loginAuth.ToString()}");
     }
@@ -274,6 +228,7 @@ public class Debugging : MonoBehaviour
 
     public void GetCookies()
     {
+        var webViewSift = FindObjectOfType<WebViewSift>();
         webViewSift.webViewObject.CallFromJS("Unity.call(document.cookie);");
     }
 

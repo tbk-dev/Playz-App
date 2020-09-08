@@ -47,7 +47,6 @@ public class WebViewSift : MonoBehaviour
                 if (webViewObject.GetVisibility() == false)
                     webViewObject.SetVisibility(true);
             }
-            Debugging.instance.DebugLog("webViewObject : " + webViewObject.transform.position.ToString());
         }
     }
 
