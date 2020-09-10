@@ -29,19 +29,26 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse); 
 // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse); 
-    public class Token    {
-        public string token_type { get; set; } 
-        public string access_token { get; set; } 
-        public int expires_in { get; set; } 
-        public string refresh_token { get; set; } 
-    }
-
-    public class LoginAuth
+public class Token
 {
-        public int member_no { get; set; } 
-        public Token token { get; set; } 
-        public string redirect { get; set; } 
-    }
+    public string token_type { get; set; }
+    public string access_token { get; set; }
+    public int expires_in { get; set; }
+    public string refresh_token { get; set; }
+}
+
+public class LoginAuth
+{
+    public int member_no { get; set; }
+    public Token token { get; set; }
+    public string redirect { get; set; }
+}
+
+// Root myDeserializedClass = JsonConvert.DeserializeObject<SendToken>(myJsonResponse); 
+public class SendToken
+{
+    public string token { get; set; }
+}
 
 public class SampleWebView : MonoBehaviour
 {
@@ -116,7 +123,6 @@ public class SampleWebView : MonoBehaviour
                     }
                 } else if (msg.Contains(@"/member/logout"))
                 {
-                    StartCoroutine(SendToken(REQUEST_TYPE.Post, loginAuth.member_no));
                     StartCoroutine(SendToken(REQUEST_TYPE.Delete, loginAuth.member_no));
                 }
             },
@@ -303,20 +309,38 @@ public class SampleWebView : MonoBehaviour
         Debugging.instance.DebugLog("::: access_token : " + loginAuth.token.access_token);
         Debugging.instance.DebugLog($"::: FCM_token : {token}");
 
-        WWWForm form = new WWWForm();
-        form.AddField("token", token);
 
         UnityWebRequest www = new UnityWebRequest();
         if (_TYPE == REQUEST_TYPE.Post)
         {
-             www = UnityWebRequest.Post(adress, form);
+            WWWForm form = new WWWForm();
+            form.AddField("token", token);
+
+
+            www = UnityWebRequest.Post(adress, form);
         }
-        else if( _TYPE == REQUEST_TYPE.Delete)
+        else if (_TYPE == REQUEST_TYPE.Delete)
         {
             www = UnityWebRequest.Delete(adress);
+
+            var sendToken = new SendToken();
+            sendToken.token = token;
+            var jsonstring = JsonConvert.SerializeObject(sendToken);
+
+
+            if (!string.IsNullOrEmpty(jsonstring))
+            {
+                byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(jsonstring);
+                www.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
+                www.SetRequestHeader("Content-Type", "Application/json");
+            }
+            www.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
         }
 
         www.SetRequestHeader("Authorization", $"{loginAuth.token.token_type} {loginAuth.token.access_token}");
+
+
+        //Send the request then wait here until it returns
         yield return www.SendWebRequest();
 
         if (www.isNetworkError || www.isHttpError)
@@ -371,7 +395,6 @@ public class SampleWebView : MonoBehaviour
 
         yield return null;
     }
-
 
     //void OnGUI()
     //{
