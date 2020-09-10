@@ -46,6 +46,7 @@ public class PluginInit : MonoBehaviour
     public void Awake()
     {
         instance = this;
+        Screen.fullScreen = false;
     }
 
     public void Start()
@@ -53,10 +54,8 @@ public class PluginInit : MonoBehaviour
         if (webViewObject == null)
             webViewObject = FindObjectOfType<WebViewObject>();
 
-        ApplicationChrome.statusBarState = ApplicationChrome.States.Visible;
-
-
     }
+
 
     public void OnEnable()
     {
@@ -114,7 +113,7 @@ public class PluginInit : MonoBehaviour
         //unityContext를 설정한다
         if (fcmPluginInstance != null)
         {
-            fcmPluginInstance.Call("SetContext", activityContext);
+            fcmPluginInstance.Call("setContext", activityContext);
             Debugging.instance.DebugLog("fcmPluginInstance setContext activityContext");
         }
         else
@@ -649,14 +648,14 @@ public class PluginInit : MonoBehaviour
     {
         try
         {
-            ShowToastMessage("종료하시겠습니까?", 400);
+            ShowToastMessage("종료하시겠습니까?\n뒤로가기 버튼을 다시 한 번 누르면 종료됩니다", 500);
         }
         catch (Exception ex)
         {
             Debugging.instance.DebugLog($"QuitApp {ex.Message}");
         }
         waitQuit = true;
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(2f);
         waitQuit = false;
     }
 }
