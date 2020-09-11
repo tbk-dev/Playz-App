@@ -62,6 +62,8 @@ public class SampleWebView : MonoBehaviour
     }
     //public string Url; = //http://www.kiwooza.com/
     public string Url = "http://dev-playz.virtual-gate.co.kr";
+    string host = "http://dev-api.playz.virtual-gate.co.kr";
+
     public Text status;
     public WebViewObject webViewObject;
 
@@ -88,7 +90,7 @@ public class SampleWebView : MonoBehaviour
                             Debugging.instance.DebugLog($"jsonSting : {msg}");
                             loginAuth = JsonConvert.DeserializeObject<LoginAuth>(msg);
                             STATE = LOGINSTATE.complete;
-                            webViewObject.EvaluateJS(@"window.location.replace('http://dev-playz.virtual-gate.co.kr');");
+                            webViewObject.EvaluateJS(@"window.location.replace('"+Url+"');");
                             Debugging.instance.DebugLog("location.replace");
 
                             StartCoroutine(SendToken(REQUEST_TYPE.Post, loginAuth.member_no));
@@ -119,7 +121,7 @@ public class SampleWebView : MonoBehaviour
                     if (!msg.Contains("response_type=jwt"))
                     {
                         Debugging.instance.DebugLog("page redirect");
-                        webViewObject.LoadURL("http://dev-playz.virtual-gate.co.kr/member/login?response_type=jwt");
+                        webViewObject.LoadURL($"{Url}/member/login?response_type=jwt");
                     }
                 } else if (msg.Contains(@"/member/logout"))
                 {
@@ -143,7 +145,7 @@ public class SampleWebView : MonoBehaviour
                 }
                 else if (msg.Contains(@"member/login"))
                 {
-                    var cookies = webViewObject.GetCookies("http://dev-playz.virtual-gate.co.kr");
+                    var cookies = webViewObject.GetCookies(Url);
                     Debugging.instance.DebugLog($"cookies :: {cookies}");
                 }
                 else
@@ -292,7 +294,6 @@ public class SampleWebView : MonoBehaviour
     }
 
 
-    string host = "http://dev-api.playz.virtual-gate.co.kr";
     //http://dev-api.playz.virtual-gate.co.kr/member/100059/fcm/token
     IEnumerator SendToken(REQUEST_TYPE _TYPE, int member_no)
     {

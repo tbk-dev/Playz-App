@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: technobloodkr
-  productName: playzWebapp
+  productName: PLAYZ
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -172,7 +172,7 @@ PlayerSettings:
     Android: com.technobloodkr.playzWebapp
     Standalone: unity.Sample Inc..sample
     Tizen: net.gree.webview.sample
-    iPhone: net.gree.webview.sample
+    iPhone: com.technobloodkr.playzWebapp
     tvOS: net.gree.webview.sample
   buildNumber:
     iPhone: 0
@@ -284,7 +284,7 @@ PlayerSettings:
   - m_BuildTarget: Android
     m_Icons:
     - m_Textures:
-      - {fileID: 2800000, guid: 041d04fcd3119884dbde29a5b4296b46, type: 3}
+      - {fileID: 2800000, guid: 344886265fcfe79459def59afb64f534, type: 3}
       m_Width: 192
       m_Height: 192
       m_Kind: 0
@@ -319,7 +319,45 @@ PlayerSettings:
       m_Height: 36
       m_Kind: 0
       m_SubKind: 
-    - m_Textures: []
+    - m_Textures:
+      - {fileID: 2800000, guid: 344886265fcfe79459def59afb64f534, type: 3}
+      m_Width: 192
+      m_Height: 192
+      m_Kind: 1
+      m_SubKind: 
+    - m_Textures:
+      - {fileID: 0}
+      m_Width: 144
+      m_Height: 144
+      m_Kind: 1
+      m_SubKind: 
+    - m_Textures:
+      - {fileID: 0}
+      m_Width: 96
+      m_Height: 96
+      m_Kind: 1
+      m_SubKind: 
+    - m_Textures:
+      - {fileID: 0}
+      m_Width: 72
+      m_Height: 72
+      m_Kind: 1
+      m_SubKind: 
+    - m_Textures:
+      - {fileID: 0}
+      m_Width: 48
+      m_Height: 48
+      m_Kind: 1
+      m_SubKind: 
+    - m_Textures:
+      - {fileID: 0}
+      m_Width: 36
+      m_Height: 36
+      m_Kind: 1
+      m_SubKind: 
+    - m_Textures:
+      - {fileID: 2800000, guid: 344886265fcfe79459def59afb64f534, type: 3}
+      - {fileID: 2800000, guid: 344886265fcfe79459def59afb64f534, type: 3}
       m_Width: 432
       m_Height: 432
       m_Kind: 2
@@ -348,42 +386,6 @@ PlayerSettings:
       m_Width: 81
       m_Height: 81
       m_Kind: 2
-      m_SubKind: 
-    - m_Textures:
-      - {fileID: 2800000, guid: 28660d2225055c64d8c9138f5882c6b3, type: 3}
-      m_Width: 192
-      m_Height: 192
-      m_Kind: 1
-      m_SubKind: 
-    - m_Textures:
-      - {fileID: 0}
-      m_Width: 144
-      m_Height: 144
-      m_Kind: 1
-      m_SubKind: 
-    - m_Textures:
-      - {fileID: 0}
-      m_Width: 96
-      m_Height: 96
-      m_Kind: 1
-      m_SubKind: 
-    - m_Textures:
-      - {fileID: 0}
-      m_Width: 72
-      m_Height: 72
-      m_Kind: 1
-      m_SubKind: 
-    - m_Textures:
-      - {fileID: 0}
-      m_Width: 48
-      m_Height: 48
-      m_Kind: 1
-      m_SubKind: 
-    - m_Textures:
-      - {fileID: 0}
-      m_Width: 36
-      m_Height: 36
-      m_Kind: 1
       m_SubKind: 
   - m_BuildTarget: iPhone
     m_Icons:
@@ -458,13 +460,13 @@ PlayerSettings:
       m_Kind: 2
       m_SubKind: iPad
     - m_Textures:
-      - {fileID: 2800000, guid: 041d04fcd3119884dbde29a5b4296b46, type: 3}
+      - {fileID: 2800000, guid: 344886265fcfe79459def59afb64f534, type: 3}
       m_Width: 180
       m_Height: 180
       m_Kind: 0
       m_SubKind: iPhone
     - m_Textures:
-      - {fileID: 2800000, guid: 636f25b2c727586459e4fecc372ad720, type: 3}
+      - {fileID: 2800000, guid: 344886265fcfe79459def59afb64f534, type: 3}
       m_Width: 120
       m_Height: 120
       m_Kind: 0
