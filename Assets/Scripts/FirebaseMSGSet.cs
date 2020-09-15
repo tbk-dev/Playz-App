@@ -167,13 +167,7 @@ public class FirebaseMSGSet : MonoBehaviour
     {
         Debugging.instance.Loglate("OnMessageReceived_Debugging new message");
         var notification = e.Message.Notification;
-        if (notification == null)
-        {
-            Debugging.instance.Loglate("notification == null");
-            return;
-        }
-
-        try
+        if (notification != null)
         {
             Debugging.instance.Loglate($"Received Title: {notification.Title}");
             Debugging.instance.Loglate($"Received Body: {notification.Body}");
@@ -183,6 +177,14 @@ public class FirebaseMSGSet : MonoBehaviour
                 Debugging.instance.Loglate($"Received ChannelId: {notification.Android?.ChannelId}");
             }
 
+        }
+        else
+        {
+            Debugging.instance.Loglate($"notification is null reciveMessage : {e.Message}");
+        }
+
+        try
+        {
             if (e.Message.From.Length > 0)
                 Debugging.instance.Loglate("from: " + e.Message.From);
 
@@ -244,16 +246,11 @@ public class FirebaseMSGSet : MonoBehaviour
 
     public void OnTokenReceived(object sender, Firebase.Messaging.TokenReceivedEventArgs token)
     {
-        Debugging.instance.Loglate("Received Registration Token: " + token.Token);
+        Debugging.instance.Loglate($"Received Registration Token: {token.Token}     __");
         userToken = token.Token;
         Debugging.instance.SaveToken($"{token.Token}");
     }
 
-
-    // Exit if escape (or back, on mobile) is pressed.
-    protected virtual void Update()
-    {
-    }
 
     // End our messaging session when the program exits.
     public void OnDestroy()

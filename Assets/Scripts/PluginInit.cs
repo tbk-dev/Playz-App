@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.Notifications.iOS;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -59,12 +60,16 @@ public class PluginInit : MonoBehaviour
 
     public void OnEnable()
     {
+#if UNITY_ANDROID
         AttachAndroid();
+#elif UNITY_IOS
+#endif
         InitSetting();
 
         toggleReceiveInfo.ButtonEvent += ToggleReceiveInfo_ButtonEvent;
         toggleSoundNoti.ButtonEvent += ToggleSoundNoti_ButtonEvent;
         toggleVibNoti.ButtonEvent += ToggleVibNoti_ButtonEvent;
+
     }
 
     public void GetUnityActivity()
@@ -188,13 +193,6 @@ public class PluginInit : MonoBehaviour
 
     private void InitSetting()
     {
-        Debug.Log("log run InitSetting");
-
-        if (Debugging.instance == null)
-        {
-            Debugging.instance.DebugLog("Debugging.instance is null");
-        }
-
         Debugging.instance.DebugLog("run InitSetting");
         //receiveInfoSlider.value = Convert.ToSingle(GetPreferenceBool(receiveInfo));
         //soundNotiSlider.value = Convert.ToSingle(GetPreferenceBool(soundNoti));
@@ -217,7 +215,9 @@ public class PluginInit : MonoBehaviour
 
     public void VibrateAction(int ms = 500)
     {
-        Debugging.instance.DebugLog("VibrateAction");
+
+#if UNITY_ANDROID
+        Debugging.instance.DebugLog("run VibrateAction");
         try
         {
             fcmPluginInstance.Call("vibrateAction", ms, activityContext);
@@ -226,6 +226,9 @@ public class PluginInit : MonoBehaviour
         {
             Debugging.instance.DebugLog($"VibrateAction {ex.Message}");
         }
+#elif UNITY_IOS
+        Debugging.instance.DebugLog($"VibrateAction call IOS");
+#endif
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -327,7 +330,7 @@ public class PluginInit : MonoBehaviour
     private void TokenRegistrationOnInitEnabled(bool ison)
     {
         //todo 구독관리
-        Debugging.instance.DebugLog(" TokenRegistrationOnInitEnabled 구독관리");
+        Debugging.instance.DebugLog("run TokenRegistrationOnInitEnabled");
 
         //Firebase.Messaging.FirebaseMessaging.TokenRegistrationOnInitEnabled = ison;
 
@@ -344,10 +347,20 @@ public class PluginInit : MonoBehaviour
         Debugging.instance.DebugLog(" ToggleSoundNoti");
         SetPreferencBool(soundNoti, isOn);
     }
+    /*
+     
+        
+#if UNITY_ANDROID
+#elif UNITY_IOS
+        Debugging.instance.DebugLog($"preference call IOS");
+#endif
 
+
+    */
 
     private void SetPreferencBool(string prefKey, bool value)
     {
+#if UNITY_ANDROID
         if (fcmPluginInstance == null)
         {
             Debugging.instance.DebugLog("SetPreferencBool Plugin is null");
@@ -355,26 +368,35 @@ public class PluginInit : MonoBehaviour
         }
 
         fcmPluginInstance.Call("setPreferenceBool", prefKey, value, activityContext);
+#elif UNITY_IOS
+        Debugging.instance.DebugLog($"SetPreferencBool call IOS");
+#endif
     }
     private bool GetPreferenceBool(string prefKey)
     {
+        bool preference = false;
+#if UNITY_ANDROID
         if (fcmPluginInstance == null)
         {
             Debugging.instance.DebugLog("GetPreferenceBool Plugin is null 1");
             return false;
         }
 
-        var preference = fcmPluginInstance.Call<bool>("getPreferenceBool", prefKey, activityContext);
+        preference = fcmPluginInstance.Call<bool>("getPreferenceBool", prefKey, activityContext);
         //유니티저장
         //PlayerPrefs.SetString(DeviceIdKey, preference);
         //PlayerPrefs.Save();
 
+#elif UNITY_IOS
+        Debugging.instance.DebugLog($"GetPreferenceBool call IOS");
+#endif
         Debugging.instance.DebugLog($"preference {prefKey} val : {preference}");
         return preference;
     }
 
     private void SetPreferenceString(string prefKey, string value)
     {
+#if UNITY_ANDROID
         if (fcmPluginInstance == null)
         {
             Debugging.instance.DebugLog("SetPreferenceString Plugin is null");
@@ -382,30 +404,31 @@ public class PluginInit : MonoBehaviour
         }
 
         fcmPluginInstance.Call("setPreferenceString", prefKey, value, activityContext);
+#elif UNITY_IOS
+        Debugging.instance.DebugLog($"preference call IOS");
+#endif
     }
     private string GetPreferenceString(string prefKey)
     {
+        string preference = "";
+#if UNITY_ANDROID
         if (fcmPluginInstance == null)
         {
             Debugging.instance.DebugLog("GetPreferenceString Plugin is null");
             return null;
         }
 
-        var preference = fcmPluginInstance.Call<string>("getPreferenceString", prefKey, activityContext);
+        preference = fcmPluginInstance.Call<string>("getPreferenceString", prefKey, activityContext);
         //유니티저장
         //PlayerPrefs.SetString(DeviceIdKey, savedPreference);
         //PlayerPrefs.Save();
 
+#elif UNITY_IOS
+        Debugging.instance.DebugLog($"preference call IOS");
+#endif
         Debugging.instance.DebugLog($"preference {prefKey} val : {preference}");
         return preference;
     }
-
-
-    public void SlectSlider()
-    {
-        Debugging.instance.DebugLog($"SlectSlider");
-    }
-
 
     public void SwitchReceiveInfoOption(float option)
     {
@@ -456,6 +479,7 @@ public class PluginInit : MonoBehaviour
 
     public void ShowToastMessage(string msg, int duration = 0)
     {
+#if UNITY_ANDROID
         //Toast는 안드로이드의 UiThread를 사용하기때문에 
         //UnityPlayerActivity UiThread를 호출하고, 다시 ShowToast를 호출합니다.
 
@@ -471,10 +495,12 @@ public class PluginInit : MonoBehaviour
             }
 
         }));
+#elif UNITY_IOS
+        Debugging.instance.DebugLog($"ShowToastMessage call IOS");
+#endif
     }
 
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
