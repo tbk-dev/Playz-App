@@ -134,25 +134,8 @@ public class SampleWebView : MonoBehaviour
             },
             ld: (msg) =>
             {
+
                 Debugging.instance.DebugLog(string.Format("CallOnLoaded[{0}]", msg));
-
-                if (Debugging.instance.UrlText != null)
-                    Debugging.instance.UrlText.text = msg;
-
-                if (msg.Contains(@"response_type=jwt"))
-                {
-                    CallInnerText();
-                }
-                else if (msg.Contains(@"member/login"))
-                {
-                    var cookies = webViewObject.GetCookies(Url);
-                    Debugging.instance.DebugLog($"cookies :: {cookies}");
-                }
-                else
-                {
-                    //outher
-                }
-
 
 #if UNITY_EDITOR_OSX || !UNITY_ANDROID
                 // NOTE: depending on the situation, you might prefer
@@ -196,11 +179,33 @@ public class SampleWebView : MonoBehaviour
                 ");
 #endif
 #endif
-                webViewObject.EvaluateJS(@"Unity.call('ua1 = ' + navigator.userAgent)");
+
+
+                if (Debugging.instance.UrlText != null)
+                    Debugging.instance.UrlText.text = msg;
+
+                if (msg.Contains(@"response_type=jwt"))
+                {
+                    CallInnerText();
+                }
+                else if (msg.Contains(@"member/login"))
+                {
+                    var cookies = webViewObject.GetCookies(Url);
+                    Debugging.instance.DebugLog($"cookies :: {cookies}");
+                }
+                else
+                {
+                    //outher
+                }
+
+                //webViewObject.EvaluateJS(@"Unity.call('ua1 = ' + navigator.userAgent)");
+                //webViewObject.EvaluateJS("Unity.call('>>> Unity call js ###   Unity call js ###44444444');");
 
             },
             //ua: "custom user agent string",
             enableWKWebView: true);
+
+
 #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
         webViewObject.bitmapRefreshCycle = 1;
 #endif
@@ -212,8 +217,8 @@ public class SampleWebView : MonoBehaviour
         else
             webViewObject.SetMargins(0, 0, 0, (int)(Screen.height - 192));
 
-        //Debug.Log($"log >>> : height : {Screen.height} , 0.1 : {(int)(Screen.height * 0.1)}  차이 {Screen.height- (int)(Screen.height * 0.1)}  ");
-        //Debug.Log($"log >>> : width : {Screen.width} , 0.1 : {(int)(Screen.width * 0.1)}  차이 {Screen.width - (int)(Screen.width * 0.1)}  ");
+        //Debug.Log($"log >>> : height : {Screen.height} , 0.1 : {(int)(Screen.height * 0.1)}  ???? {Screen.height- (int)(Screen.height * 0.1)}  ");
+        //Debug.Log($"log >>> : width : {Screen.width} , 0.1 : {(int)(Screen.width * 0.1)}  ???? {Screen.width - (int)(Screen.width * 0.1)}  ");
         webViewObject.SetVisibility(true);
         
 #if !UNITY_WEBPLAYER && !UNITY_WEBGL
@@ -274,13 +279,11 @@ public class SampleWebView : MonoBehaviour
             "   };" +
             "});");
 #endif
-        Debugging.instance.DebugLog("Start  2  ");
         yield break;
     }
 
     public void CallInnerText()
     {
-        //webViewObject.EvaluateJS("Unity.call('"+tag+">>> '+ document.documentElement.innerText.toString());");
         webViewObject.EvaluateJS("Unity.call(document.documentElement.innerText.toString());");
         STATE = LOGINSTATE.receivewaitjson;
     }
@@ -306,8 +309,8 @@ public class SampleWebView : MonoBehaviour
 
 
         string adress = $"{host}/member/{member_no}/fcm/token?t={DateTime.Now.Millisecond}";
-        Debugging.instance.DebugLog("::: adress " + adress);
-        Debugging.instance.DebugLog("::: access_token : " + loginAuth.token.access_token);
+        Debugging.instance.DebugLog($"::: adress {adress}");
+        Debugging.instance.DebugLog($"::: access_token : {loginAuth.token.access_token}");
         Debugging.instance.DebugLog($"::: FCM_token : {token}");
 
 
@@ -357,15 +360,10 @@ public class SampleWebView : MonoBehaviour
         Debugging.instance.DebugLog("::: downloadHandler " + www.downloadHandler.text);
         
         byte[] results = www.downloadHandler.data;
-        ////string str = Encoding.Default.GetString(results);
+        //string str = Encoding.Default.GetString(results);
 
-        //Debug.Log($"dataStr {str}");
-        //var JsonObject = ParsingJson2TeamInfoList(str);
-        //ActiveRequestEvent(JsonObject);
-
-        //    using (FileStream file = new FileStream(Application.dataPath + "\\urls33333333333333.txt", FileMode.Create, FileAccess.ReadWrite, FileShare.Read))   // 지정된 경로에 파일을 생성 
+        //    using (FileStream file = new FileStream(Application.dataPath + "\\urls33333333333333.txt", FileMode.Create, FileAccess.ReadWrite, FileShare.Read))   // ?????? ?????? ?????? ???? 
         //    {
-        //        // 생성된 파일에 바이트배열로 저장한 컨텐츠 파일을 씀
         //        file.Write(results, 0, results.Length);
         //        Debug.LogError("!!! : " + results);
         //    }
@@ -375,7 +373,6 @@ public class SampleWebView : MonoBehaviour
 
     IEnumerator GetTimeTable(string suburl)
     {
-
         string adress = $"{suburl}?t={DateTime.Now.Millisecond}";
 
         UnityWebRequest www = UnityWebRequest.Get(adress);
@@ -396,37 +393,5 @@ public class SampleWebView : MonoBehaviour
 
         yield return null;
     }
-
-    //void OnGUI()
-    //{
-    //    GUI.enabled = webViewObject.CanGoBack();
-    //    if (GUI.Button(new Rect(10, 10, 80, 80), "<")) {
-    //        webViewObject.GoBack();
-    //    }
-    //    GUI.enabled = true;
-
-    //    GUI.enabled = webViewObject.CanGoForward();
-    //    if (GUI.Button(new Rect(100, 10, 80, 80), ">")) {
-    //        webViewObject.GoForward();
-    //    }
-    //    GUI.enabled = true;
-
-    //    GUI.TextField(new Rect(200, 10, 300, 80), "" + webViewObject.Progress());
-
-    //    if (GUI.Button(new Rect(600, 10, 80, 80), "*")) {
-    //        var g = GameObject.Find("WebViewObject");
-    //        if (g != null) {
-    //            Destroy(g);
-    //        } else {
-    //            StartCoroutine(Start());
-    //        }
-    //    }
-    //    GUI.enabled = true;
-
-    //    if (GUI.Button(new Rect(700, 10, 80, 80), "c")) {
-    //        Debug.Log(webViewObject.GetCookies(Url));
-    //    }
-    //    GUI.enabled = true;
-    //}
 
 }
