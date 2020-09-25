@@ -129,43 +129,6 @@ public class PluginInit : MonoBehaviour
     }
 
 
-    public AndroidJavaClass GetAndroidJavaClass(string javaClass)
-    {
-        try
-        {
-            using (var androidJavaClass = new AndroidJavaClass(javaClass))
-            {
-                if (androidJavaClass != null)
-                {
-                    Debugging.instance.DebugLog($"{javaClass} Android Java class is loaded");
-                    return androidJavaClass;
-                }
-            }
-        }
-        catch
-        {
-        }
-
-        Debugging.instance.DebugLog($"{javaClass} could not be loaded");
-        return null;
-    }
-
-    public AndroidJavaObject GetAndroidJavaObject(string javaObject)
-    {
-        try
-        {
-            using (var androidJavaObject = new AndroidJavaObject(javaObject))
-            {
-                return androidJavaObject;
-            }
-        }
-        catch (Exception ex)
-        {
-            Debugging.instance.DebugLog($"GetAndroidJavaObject is {ex.Message}");
-        }
-        return null;
-    }
-
 
 
     public void LangBtn()
@@ -197,7 +160,9 @@ public class PluginInit : MonoBehaviour
         //soundNotiSlider.value = Convert.ToSingle(GetPreferenceBool(soundNoti));
         //vibNotiSlider.value = Convert.ToSingle(GetPreferenceBool(vibNoti));
 
-        toggleReceiveInfo.isOn = GetPreferenceBool(receiveInfo);
+
+        //toggleReceiveInfo.isOn = GetPreferenceBool(receiveInfo);
+        toggleReceiveInfo.isOn = Firebase.Messaging.FirebaseMessaging.TokenRegistrationOnInitEnabled;        //GetPreferenceBool(receiveInfo);
         Debugging.instance.DebugLog($"toggleReceiveInfo : {toggleReceiveInfo.isOn}");
 
         TokenRegistrationOnInitEnabled(toggleReceiveInfo.isOn);
@@ -332,6 +297,23 @@ public class PluginInit : MonoBehaviour
         Debugging.instance.DebugLog("run TokenRegistrationOnInitEnabled");
 
         //Firebase.Messaging.FirebaseMessaging.TokenRegistrationOnInitEnabled = ison;
+
+#if UNITY_ANDROID
+        if (fcmPluginInstance == null)
+        {
+            Debugging.instance.DebugLog("TokenRegistrationOnInitEnabled Plugin is null");
+            return;
+        }
+
+        fcmPluginInstance.Call("SetActiveFCM", ison);
+        //fcmPluginInstance.Call("SetActiveFCM", ison, true); //알림 수신 설정시에 토큰 삭제가 필요 한 경우 인자추가
+        Debugging.instance.DebugLog(" end ANDROID SetActiveFCM");
+
+
+#elif UNITY_IOS
+        Debugging.instance.DebugLog($"TokenRegistrationOnInitEnabled call IOS");
+#endif
+
 
         //todo 새로 구독후 토큰값이 바뀌는지 확인후에 바뀐다면 서버로 전송
     }
@@ -515,13 +497,6 @@ public class PluginInit : MonoBehaviour
 
     public void LogUnity(string msg)
     {
-        //Toast는 안드로이드의 UiThread를 사용하기때문에 
-        //UnityPlayerActivity UiThread를 호출하고, 다시 ShowToast를 호출합니다.
-
-        //UiThread에서 호출하지 않으면 Looper.prepare()어쩌고 에러가 뜨는데..
-        //activityContext.Call("runOnUiThread", new AndroidJavaRunnable(() =>
-        //{
-
         if (fcmPluginInstance != null)
         {
             fcmPluginInstance.Call("LogUnity", msg);
@@ -530,8 +505,6 @@ public class PluginInit : MonoBehaviour
         {
             Debug.LogError($"notWorkPluginLog >>> {msg}");
         }
-
-        //}));
     }
 
     public void OnDisable()
@@ -541,12 +514,51 @@ public class PluginInit : MonoBehaviour
         toggleVibNoti.ButtonEvent -= ToggleVibNoti_ButtonEvent;
     }
 
+    #region android plugin
+
+    public AndroidJavaClass GetAndroidJavaClass(string javaClass)
+    {
+        try
+        {
+            using (var androidJavaClass = new AndroidJavaClass(javaClass))
+            {
+                if (androidJavaClass != null)
+                {
+                    Debugging.instance.DebugLog($"{javaClass} Android Java class is loaded");
+                    return androidJavaClass;
+                }
+            }
+        }
+        catch
+        {
+        }
+
+        Debugging.instance.DebugLog($"{javaClass} could not be loaded");
+        return null;
+    }
+
+    public AndroidJavaObject GetAndroidJavaObject(string javaObject)
+    {
+        try
+        {
+            using (var androidJavaObject = new AndroidJavaObject(javaObject))
+            {
+                return androidJavaObject;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debugging.instance.DebugLog($"GetAndroidJavaObject is {ex.Message}");
+        }
+        return null;
+    }
+
     private AndroidJavaObject JavaObjectCallStaticObject(AndroidJavaObject androidJavaObject, string objectName)
     {
         try
         {
             var result = androidJavaObject.CallStatic<AndroidJavaObject>(objectName);
-            Debugging.instance.DebugLog("### call ### call ### call ### call");
+            Debugging.instance.DebugLog("### call JavaObjectCallStaticObject");
             return result;
         }
         catch (Exception)
@@ -562,7 +574,7 @@ public class PluginInit : MonoBehaviour
         {
 
             var result = androidJavaObject.Call<AndroidJavaObject>(objectName);
-            Debugging.instance.DebugLog("### call ### call ### call ### call");
+            Debugging.instance.DebugLog("### call JavaObjectCallObject");
             return result;
         }
         catch (Exception)
@@ -577,7 +589,7 @@ public class PluginInit : MonoBehaviour
         try
         {
             var result = androidJavaClass.CallStatic<AndroidJavaObject>(objectName);
-            Debugging.instance.DebugLog("### call ### call ### call ### call");
+            Debugging.instance.DebugLog("### call JavaClassCallStaticObject");
             return result;
         }
         catch (Exception)
@@ -593,7 +605,7 @@ public class PluginInit : MonoBehaviour
         {
 
             var result = androidJavaClass.Call<AndroidJavaObject>(objectName);
-            Debugging.instance.DebugLog("### call ### call ### call ### call");
+            Debugging.instance.DebugLog("### call JavaClassCallObject");
             return result;
         }
         catch (Exception)
@@ -604,13 +616,12 @@ public class PluginInit : MonoBehaviour
     }
 
 
-
     private AndroidJavaClass JavaObjectCallStaticClass(AndroidJavaObject androidJavaObject, string className)
     {
         try
         {
             var result = androidJavaObject.CallStatic<AndroidJavaClass>(className);
-            Debugging.instance.DebugLog("### call ### call ### call ### call");
+            Debugging.instance.DebugLog("### call JavaObjectCallStaticClass");
             return result;
 
         }
@@ -627,7 +638,7 @@ public class PluginInit : MonoBehaviour
         {
 
             var result = androidJavaObject.Call<AndroidJavaClass>(className);
-            Debugging.instance.DebugLog("### call ### call ### call ### call");
+            Debugging.instance.DebugLog("### call JavaObjectCallClass");
             return result;
         }
         catch (Exception)
@@ -642,7 +653,7 @@ public class PluginInit : MonoBehaviour
         try
         {
             var result = androidJavaClass.CallStatic<AndroidJavaClass>(className);
-            Debugging.instance.DebugLog("### call ### call ### call ### call");
+            Debugging.instance.DebugLog("### call JavaClassCallStaticClass");
             return result;
         }
         catch (Exception)
@@ -657,7 +668,7 @@ public class PluginInit : MonoBehaviour
         try
         {
             var result = androidJavaClass.Call<AndroidJavaClass>(className);
-            Debugging.instance.DebugLog("### call ### call ### call ### call");
+            Debugging.instance.DebugLog("### call JavaClassCallClass");
             return result;
         }
         catch (Exception)
@@ -667,7 +678,7 @@ public class PluginInit : MonoBehaviour
         return null;
     }
 
-
+    #endregion
 
     IEnumerator QuitApp()
     {
