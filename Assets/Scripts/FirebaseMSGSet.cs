@@ -158,11 +158,6 @@ public class FirebaseMSGSet : MonoBehaviour
         }
     }
 
-    public void Noti(string msg)
-    {
-        Debug.Log($">>> msg >>> msg >>> msg >>> msg");
-    }
-
     public void OnMessageReceived(object sender, Firebase.Messaging.MessageReceivedEventArgs e)
     {
         Debugging.instance.Loglate("OnMessageReceived_Debugging new message");

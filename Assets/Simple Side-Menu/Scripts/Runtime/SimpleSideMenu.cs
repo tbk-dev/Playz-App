@@ -445,7 +445,6 @@ namespace DanielLochner.Assets.SimpleSideMenu
             landscapeLeft,
         }
 
-        SCREENROTATIONSTATE screenRotationState;
         public int screenWidth = 0;
         public int screenHeight = 0;
 
@@ -468,15 +467,14 @@ namespace DanielLochner.Assets.SimpleSideMenu
                             //Screenwidth = Screen.width;
 
                             //Debug.Log($"Not Portrait -- height { Screen.height}, width  { Screen.width}");
-                            screenRotationState = SCREENROTATIONSTATE.portrait;
+
+
+                            //screenRotationState = SCREENROTATIONSTATE.portrait;
                             rectTransform.sizeDelta = canvas.GetComponent<RectTransform>().sizeDelta;
 
                             //rectTransform.sizeDelta = new Vector2(Screenwidth/*Screen.width*/, (int)(Screenheight * 0.9));//(int)(Screen.height * 0.9));
-                            //rectTransform.sizeDelta = new Vector2(Screen.width, (int)(Screen.height * 0.9)); 
 
                             rectTransform.sizeDelta = new Vector2(Screen.width, (int)(Screen.height * 0.9));
-
-                            //rectTransform.ForceUpdateRectTransforms();/* = new Rect(0.0f, 0.0f, Screen.width, Screen.height);*/
                         }
                     }
                     else
@@ -487,16 +485,14 @@ namespace DanielLochner.Assets.SimpleSideMenu
                             //Screenwidth = Screen.height;
 
                             //Debug.Log($"Not landscapeLeft --  height { Screen.height}, width  { Screen.width}");
-                            screenRotationState = SCREENROTATIONSTATE.landscapeLeft;
+
+
+                            //screenRotationState = SCREENROTATIONSTATE.landscapeLeft;
                             rectTransform.sizeDelta = canvas.GetComponent<RectTransform>().sizeDelta;
 
                             //rectTransform.sizeDelta = new Vector2(Screenwidth/*Screen.width*/, Screenheight - 192);//(int)(Screen.height - 192));
-                            //rectTransform.sizeDelta = new Vector2(Screenwidth, (int)(Screen.height - 192));
 
                             rectTransform.sizeDelta = new Vector2(Screen.width, (int)(Screen.height * 0.9));
-
-                            //controlArea = new Rect(0.0f, 0.0f, Screen.width * 0.5f, Screen.height);
-                            //logArea = new Rect(Screen.width * 0.5f, 0.0f, Screen.width * 0.5f, Screen.height);
                         }
                     }
 

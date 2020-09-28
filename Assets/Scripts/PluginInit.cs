@@ -285,16 +285,16 @@ public class PluginInit : MonoBehaviour
 
     private void ToggleReceiveInfo_ButtonEvent(bool isOn)
     {
-        Debugging.instance.DebugLog(" ToggleReceiveInfo");
+        Debugging.instance.DebugLog($" ToggleReceiveInfo  {isOn}");
         SetPreferencBool(receiveInfo, isOn);
 
         TokenRegistrationOnInitEnabled(isOn);
     }
 
-    private void TokenRegistrationOnInitEnabled(bool ison)
+    private void TokenRegistrationOnInitEnabled(bool isOn)
     {
-        //todo 구독관리
-        Debugging.instance.DebugLog("run TokenRegistrationOnInitEnabled");
+        //todo 구독관리1
+        Debugging.instance.DebugLog($"run TokenRegistrationOnInitEnabled");
 
         //Firebase.Messaging.FirebaseMessaging.TokenRegistrationOnInitEnabled = ison;
 
@@ -305,7 +305,7 @@ public class PluginInit : MonoBehaviour
             return;
         }
 
-        fcmPluginInstance.Call("SetActiveFCM", ison);
+        fcmPluginInstance.Call("SetActiveFCM", isOn);
         //fcmPluginInstance.Call("SetActiveFCM", ison, true); //알림 수신 설정시에 토큰 삭제가 필요 한 경우 인자추가
         Debugging.instance.DebugLog(" end ANDROID SetActiveFCM");
 
@@ -524,16 +524,16 @@ public class PluginInit : MonoBehaviour
             {
                 if (androidJavaClass != null)
                 {
-                    Debugging.instance.DebugLog($"{javaClass} Android Java class is loaded");
+                    Debugging.instance.DebugLog($"{javaClass} Android javaClass is loaded");
                     return androidJavaClass;
                 }
             }
         }
         catch
         {
+            Debugging.instance.DebugLog($"{javaClass} could not be loaded");
         }
 
-        Debugging.instance.DebugLog($"{javaClass} could not be loaded");
         return null;
     }
 
@@ -543,12 +543,13 @@ public class PluginInit : MonoBehaviour
         {
             using (var androidJavaObject = new AndroidJavaObject(javaObject))
             {
+                    Debugging.instance.DebugLog($"{javaObject} Android javaObject is loaded");
                 return androidJavaObject;
             }
         }
-        catch (Exception ex)
+        catch
         {
-            Debugging.instance.DebugLog($"GetAndroidJavaObject is {ex.Message}");
+            Debugging.instance.DebugLog($"{javaObject} could not be loaded");
         }
         return null;
     }
@@ -563,7 +564,7 @@ public class PluginInit : MonoBehaviour
         }
         catch (Exception)
         {
-            Debugging.instance.DebugLog($"### JavaClassCallStaticObject is null");
+            Debugging.instance.DebugLog($"### JavaObjectCallStaticObject is null");
         }
         return null;
     }
@@ -579,7 +580,7 @@ public class PluginInit : MonoBehaviour
         }
         catch (Exception)
         {
-            Debugging.instance.DebugLog($"### JavaClassCallObject is null");
+            Debugging.instance.DebugLog($"### JavaObjectCallObject is null");
         }
         return null;
     }
@@ -627,7 +628,7 @@ public class PluginInit : MonoBehaviour
         }
         catch (Exception)
         {
-            Debugging.instance.DebugLog($"### JavaClassCallStaticClass is null");
+            Debugging.instance.DebugLog($"### JavaObjectCallStaticClass is null");
         }
         return null;
     }
@@ -643,7 +644,7 @@ public class PluginInit : MonoBehaviour
         }
         catch (Exception)
         {
-            Debugging.instance.DebugLog($"### JavaClassCallClass is null");
+            Debugging.instance.DebugLog($"### JavaObjectCallClass is null");
         }
         return null;
     }

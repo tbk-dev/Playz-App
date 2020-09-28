@@ -73,7 +73,6 @@ public class SampleWebView : MonoBehaviour
 
     IEnumerator Start()
     {
-        Debugging.instance.DebugLog("Start  0  ");
         //webViewObject = (new GameObject("WebViewObject")).AddComponent<WebViewObject>();
         webViewObject.Init(
             cb: (msg) =>
@@ -107,14 +106,14 @@ public class SampleWebView : MonoBehaviour
             },
             err: (msg) =>
             {
-                Debugging.instance.DebugLog(string.Format("CallOnError[{0}]", msg));
+                Debugging.instance.DebugLog(string.Format("CallOnError[ {0} ]", msg));
                 status.text = msg;
                 status.GetComponent<Animation>().Play();
 
             },
             started: (msg) =>
             {
-                Debugging.instance.DebugLog(string.Format("CallOnStarted[{0}]", msg));
+                Debugging.instance.DebugLog(string.Format("CallOnStarted[ {0} ]", msg));
 
                 if (msg.Contains(@"member/login"))
                 {
@@ -196,11 +195,14 @@ public class SampleWebView : MonoBehaviour
                 ");
 #endif
 #endif
-                webViewObject.EvaluateJS(@"Unity.call('ua1 = ' + navigator.userAgent)");
+
+                //ua: "custom user agent string",
+                //webViewObject.EvaluateJS(@"Unity.call('ua1 = ' + navigator.userAgent)");
 
             },
-            //ua: "custom user agent string",
             enableWKWebView: true);
+
+
 #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
         webViewObject.bitmapRefreshCycle = 1;
 #endif
@@ -274,7 +276,6 @@ public class SampleWebView : MonoBehaviour
             "   };" +
             "});");
 #endif
-        Debugging.instance.DebugLog("Start  2  ");
         yield break;
     }
 

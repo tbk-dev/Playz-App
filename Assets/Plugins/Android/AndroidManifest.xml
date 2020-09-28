@@ -4,6 +4,7 @@
     <!-- The MessagingUnityPlayerActivity is a class that extends
          UnityPlayerActivity to work around a known issue when receiving
          notification data payloads in the background. -->
+    
     <!--<activity android:name="com.google.firebase.MessagingUnityPlayerActivity" android:configChanges="fontScale|keyboard|keyboardHidden|locale|mnc|mcc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|uiMode|touchscreen">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
@@ -12,8 +13,6 @@
       <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
     </activity>
     <service android:name="com.google.firebase.messaging.MessageForwardingService" android:exported="false" />-->
-    
-    
     
     
     <activity android:label="@string/app_name" android:name="com.unity3d.nostatusbar.UnityPlayerActivityStatusBar">
@@ -37,6 +36,11 @@
         <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
       </intent-filter>
     </service>
+
+    <!-- FCM: Disable auto-init -->
+    <!--<meta-data android:name="firebase_messaging_auto_init_enabled" android:value="true" />
+    <meta-data android:name="firebase_analytics_collection_enabled" android:value="true" />-->
+
     <!-- [END firebase_service] -->
     
     
