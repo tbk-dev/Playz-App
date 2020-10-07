@@ -21,7 +21,9 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections;
+using System.IO;
 using System.Net.Http;
+using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 #if UNITY_2018_4_OR_NEWER
 using UnityEngine.Networking;
@@ -396,6 +398,29 @@ public class SampleWebView : MonoBehaviour
         //timeTableData = str.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
         yield return null;
+    }
+
+
+//클래스 저장
+    public void Save()
+    {
+        BinaryFormatter bf = new BinaryFormatter();
+        FileStream file = File.Create(Application.persistentDataPath + "/playerInfo.dat");
+        LoginAuth data = new LoginAuth();
+        data = loginAuth;
+        bf.Serialize(file, data);
+        file.Close();
+    }
+    public void Load()
+    {
+        if (File.Exists(Application.persistentDataPath + "/ playerInfo.dat"))
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            FileStream file = File.Open(Application.persistentDataPath + "/ playerInfo.dat", FileMode.Open);
+            LoginAuth data = (LoginAuth)bf.Deserialize(file);
+            file.Close();
+            loginAuth = data;
+        }
     }
 
     //void OnGUI()
