@@ -36,6 +36,8 @@ public class FirebaseMSGSet : MonoBehaviour
 
             if (dependencyStatus == Firebase.DependencyStatus.Available)
             {
+                ToggleTokenOnInit();
+
                 // Create and hold a reference to your FirebaseApp,
                 // where app is a Firebase.FirebaseApp property of your application class.
                 InitializeFirebase();
@@ -54,9 +56,7 @@ public class FirebaseMSGSet : MonoBehaviour
         try
         {
             Debugging.instance.Loglate($"Start Firebase Messaging Initialized");
-            //Debugging.instance.Loglate($"Start Firebase Messaging Initialized");
-            Firebase.Messaging.FirebaseMessaging.MessageReceived += OnMessageReceived;
-            Firebase.Messaging.FirebaseMessaging.TokenReceived += OnTokenReceived;
+
 
             SubscribeTopic(defaultTopic);
 
@@ -213,6 +213,22 @@ public class FirebaseMSGSet : MonoBehaviour
         bool newValue = !FirebaseMessaging.TokenRegistrationOnInitEnabled;
         FirebaseMessaging.TokenRegistrationOnInitEnabled = newValue;
         Debugging.instance.Loglate("Set TokenRegistrationOnInitEnabled to " + newValue);
+
+        if(newValue)
+        {
+            Firebase.Messaging.FirebaseMessaging.MessageReceived += OnMessageReceived;
+            Firebase.Messaging.FirebaseMessaging.TokenReceived += OnTokenReceived;
+
+            SubscribeTopic(defaultTopic);
+        }
+        else
+        {
+            Firebase.Messaging.FirebaseMessaging.MessageReceived -= OnMessageReceived;
+            Firebase.Messaging.FirebaseMessaging.TokenReceived -= OnTokenReceived;
+
+            UnSubscribeTopic(defaultTopic);
+        }
+
     }
 
     //public void GetToken()
@@ -241,17 +257,8 @@ public class FirebaseMSGSet : MonoBehaviour
 
     public void OnTokenReceived(object sender, Firebase.Messaging.TokenReceivedEventArgs token)
     {
-        Debugging.instance.Loglate($"Received Registration Token: {token.Token}     __");
         userToken = token.Token;
         Debugging.instance.SaveToken($"{token.Token}");
-    }
-
-
-    // End our messaging session when the program exits.
-    public void OnDestroy()
-    {
-        Firebase.Messaging.FirebaseMessaging.MessageReceived -= OnMessageReceived;
-        Firebase.Messaging.FirebaseMessaging.TokenReceived -= OnTokenReceived;
     }
 
     Firebase.DependencyStatus lastStatus;

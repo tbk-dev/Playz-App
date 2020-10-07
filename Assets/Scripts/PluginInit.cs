@@ -53,7 +53,6 @@ public class PluginInit : MonoBehaviour
     {
         if (webViewObject == null)
             webViewObject = FindObjectOfType<WebViewObject>();
-
     }
 
 
@@ -196,7 +195,7 @@ public class PluginInit : MonoBehaviour
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    #region ::::::::: button test
+#region ::::::::: button test
 
     public void CallFCM()
     {
@@ -279,7 +278,7 @@ public class PluginInit : MonoBehaviour
 
     }
 
-    #endregion
+#endregion
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -295,8 +294,9 @@ public class PluginInit : MonoBehaviour
     {
         //todo 구독관리1
         Debugging.instance.DebugLog($"run TokenRegistrationOnInitEnabled");
+        //Firebase.Messaging.FirebaseMessaging.TokenRegistrationOnInitEnabled = isOn;
 
-        //Firebase.Messaging.FirebaseMessaging.TokenRegistrationOnInitEnabled = ison;
+        FindObjectOfType<FirebaseMSGSet>().ToggleTokenOnInit();
 
 #if UNITY_ANDROID
         if (fcmPluginInstance == null)
@@ -311,9 +311,12 @@ public class PluginInit : MonoBehaviour
 
 
 #elif UNITY_IOS
+
         Debugging.instance.DebugLog($"TokenRegistrationOnInitEnabled call IOS");
 #endif
 
+
+        Debugging.instance.DebugLog($"TokenReg {  Firebase.Messaging.FirebaseMessaging.TokenRegistrationOnInitEnabled = isOn}");
 
         //todo 새로 구독후 토큰값이 바뀌는지 확인후에 바뀐다면 서버로 전송
     }
@@ -514,7 +517,7 @@ public class PluginInit : MonoBehaviour
         toggleVibNoti.ButtonEvent -= ToggleVibNoti_ButtonEvent;
     }
 
-    #region android plugin
+#region android plugin
 
     public AndroidJavaClass GetAndroidJavaClass(string javaClass)
     {
@@ -679,7 +682,7 @@ public class PluginInit : MonoBehaviour
         return null;
     }
 
-    #endregion
+#endregion
 
     IEnumerator QuitApp()
     {
