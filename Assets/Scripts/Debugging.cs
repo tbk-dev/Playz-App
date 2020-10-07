@@ -26,13 +26,6 @@ public class Debugging : MonoBehaviour
                     Debug.LogError("debugging is null");
                     Debug.LogError("debugging is null");
                     Debug.LogError("debugging is null");
-                    Debug.LogError("debugging is null");
-                    Debug.LogError("debugging is null");
-                    Debug.LogError("debugging is null");
-                    Debug.LogError("debugging is null");
-                    Debug.LogError("debugging is null");
-                    Debug.LogError("debugging is null");
-                    Debug.LogError("debugging is null");
                     //instance = new Debugging();
                 }
                 return instance;
@@ -198,6 +191,8 @@ public class Debugging : MonoBehaviour
 #else
         Console.WriteLine($"Ulog >>> {s}");
 #endif
+
+        //unity logtext object에 출력
         if (logText1 == null)
         {
             return;
