@@ -57,10 +57,6 @@ public class Debugging : MonoBehaviour
         //StartCoroutine(BottonLogDependencyStatus());
     }
 
-    private void Update()
-    {
-    }
-
 
     public void BtnDependencyStatus()
     {

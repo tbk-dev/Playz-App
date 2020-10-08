@@ -49,10 +49,15 @@ public class PluginInit : MonoBehaviour
         Screen.fullScreen = false;
     }
 
+    SampleWebView sampleWebView;
     public void Start()
     {
         if (webViewObject == null)
             webViewObject = FindObjectOfType<WebViewObject>();
+
+        sampleWebView = FindObjectOfType<SampleWebView>();
+        
+
     }
 
 
@@ -285,9 +290,10 @@ public class PluginInit : MonoBehaviour
     private void ToggleReceiveInfo_ButtonEvent(bool isOn)
     {
         Debugging.instance.DebugLog($" ToggleReceiveInfo  {isOn}");
+        StartCoroutine(sampleWebView.SendToken(SampleWebView.REQUEST_TYPE.Delete, sampleWebView.LoadLoginAuth()));
         SetPreferencBool(receiveInfo, isOn);
 
-        TokenRegistrationOnInitEnabled(isOn);
+        //TokenRegistrationOnInitEnabled(isOn);
     }
 
     private void TokenRegistrationOnInitEnabled(bool isOn)

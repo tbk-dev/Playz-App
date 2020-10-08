@@ -25,6 +25,7 @@ using System.IO;
 using System.Net.Http;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
+using UnityEngine.Networking;
 #if UNITY_2018_4_OR_NEWER
 using UnityEngine.Networking;
 #endif
@@ -72,6 +73,10 @@ public class SampleWebView : MonoBehaviour
     public LoginAuth loginAuth;
 
     LOGINSTATE STATE;
+    private void Awake()
+    {
+        LoadLoginAuth();
+    }
 
     IEnumerator Start()
     {
@@ -90,11 +95,12 @@ public class SampleWebView : MonoBehaviour
                         {
                             Debugging.instance.DebugLog($"jsonSting : {msg}");
                             loginAuth = JsonConvert.DeserializeObject<LoginAuth>(msg);
+                            SaveLoginAuth(loginAuth);
                             STATE = LOGINSTATE.complete;
                             webViewObject.EvaluateJS(@"window.location.replace('"+Url+"');");
                             Debugging.instance.DebugLog("location.replace");
 
-                            StartCoroutine(SendToken(REQUEST_TYPE.Post, loginAuth.member_no));
+                            StartCoroutine(SendToken(REQUEST_TYPE.Post, loginAuth));
                         }
                         catch (Exception ex)
                         {
@@ -126,7 +132,7 @@ public class SampleWebView : MonoBehaviour
                     }
                 } else if (msg.Contains(@"/member/logout"))
                 {
-                    StartCoroutine(SendToken(REQUEST_TYPE.Delete, loginAuth.member_no));
+                    StartCoroutine(SendToken(REQUEST_TYPE.Delete, loginAuth));
                 }
             },
             hooked: (msg) =>
@@ -298,17 +304,11 @@ public class SampleWebView : MonoBehaviour
 
 
     //http://dev-api.playz.virtual-gate.co.kr/member/100059/fcm/token
-    IEnumerator SendToken(REQUEST_TYPE _TYPE, int member_no)
+    public IEnumerator SendToken(REQUEST_TYPE _TYPE, LoginAuth loginAuth)
     {
-        string token = FindObjectOfType<FirebaseMSGSet>().userToken;
-        if(string.IsNullOrEmpty(token))
-        {
-            Debugging.instance.DebugLog($"::: IsNullOrEmpty(FCM_token)");
-            yield return null;
-        }
+        var token = GetUserToken();
 
-
-        string adress = $"{host}/member/{member_no}/fcm/token?t={DateTime.Now.Millisecond}";
+        string adress = $"{host}/member/{loginAuth.member_no}/fcm/token?t={DateTime.Now.Millisecond}";
         Debugging.instance.DebugLog("::: adress " + adress);
         Debugging.instance.DebugLog("::: access_token : " + loginAuth.token.access_token);
         Debugging.instance.DebugLog($"::: FCM_token : {token}");
@@ -317,6 +317,7 @@ public class SampleWebView : MonoBehaviour
         UnityWebRequest www = new UnityWebRequest();
         if (_TYPE == REQUEST_TYPE.Post)
         {
+            Debugging.instance.DebugLog($"::: REQUEST_TYPE.Post");
             WWWForm form = new WWWForm();
             form.AddField("token", token);
 
@@ -325,8 +326,10 @@ public class SampleWebView : MonoBehaviour
         }
         else if (_TYPE == REQUEST_TYPE.Delete)
         {
+            Debugging.instance.DebugLog($"::: REQUEST_TYPE.Delete");
             www = UnityWebRequest.Delete(adress);
 
+            //www.useHttpContinue = useHttpContinue;
             var sendToken = new SendToken();
             sendToken.token = token;
             var jsonstring = JsonConvert.SerializeObject(sendToken);
@@ -335,21 +338,22 @@ public class SampleWebView : MonoBehaviour
             if (!string.IsNullOrEmpty(jsonstring))
             {
                 byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(jsonstring);
-                www.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
+                www.uploadHandler = new UploadHandlerRaw(jsonToSend);
                 www.SetRequestHeader("Content-Type", "Application/json");
             }
-            www.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+            www.downloadHandler = new DownloadHandlerBuffer();
         }
 
-        www.SetRequestHeader("Authorization", $"{loginAuth.token.token_type} {loginAuth.token.access_token}");
-
+        var authtoken = $"{loginAuth.token.token_type} {loginAuth.token.access_token}";
+        www.SetRequestHeader("Authorization", authtoken);
+        //www.SetRequestHeader("Authorization", token);
 
         //Send the request then wait here until it returns
         yield return www.SendWebRequest();
 
         if (www.isNetworkError || www.isHttpError)
         {
-            Debug.Log(www.error);
+            Debug.Log($"Request Error :: {www.error}");
             yield return null;
         }
 
@@ -358,14 +362,15 @@ public class SampleWebView : MonoBehaviour
 
         // Or retrieve results as binary data
         Debugging.instance.DebugLog("::: downloadHandler " + www.downloadHandler.text);
-        
-        byte[] results = www.downloadHandler.data;
+
+        //byte[] results = www.downloadHandler.data;
         ////string str = Encoding.Default.GetString(results);
 
-        //Debug.Log($"dataStr {str}");
+        //json 오브젝트 변환
         //var JsonObject = ParsingJson2TeamInfoList(str);
         //ActiveRequestEvent(JsonObject);
 
+        //파일로 저장
         //    using (FileStream file = new FileStream(Application.dataPath + "\\urls33333333333333.txt", FileMode.Create, FileAccess.ReadWrite, FileShare.Read))   // 지정된 경로에 파일을 생성 
         //    {
         //        // 생성된 파일에 바이트배열로 저장한 컨텐츠 파일을 씀
@@ -401,27 +406,56 @@ public class SampleWebView : MonoBehaviour
     }
 
 
-//클래스 저장
-    public void Save()
+    //클래스 저장
+    public void SaveLoginAuth(LoginAuth loginAuthdata)
     {
         BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Create(Application.persistentDataPath + "/playerInfo.dat");
-        LoginAuth data = new LoginAuth();
-        data = loginAuth;
-        bf.Serialize(file, data);
+
+        var filePath = $"{Application.persistentDataPath}/playerInfo.dat";
+        FileStream file = File.Create(filePath);
+
+        LoginAuth authData = loginAuthdata;
+        bf.Serialize(file, authData);
         file.Close();
+        Debugging.instance.DebugLog($"SaveLoginAuth >> {filePath}");
     }
-    public void Load()
+
+    public LoginAuth LoadLoginAuth()
     {
-        if (File.Exists(Application.persistentDataPath + "/ playerInfo.dat"))
+        var filePath = $"{Application.persistentDataPath}/playerInfo.dat";
+
+        if (File.Exists(filePath))
         {
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Open(Application.persistentDataPath + "/ playerInfo.dat", FileMode.Open);
+            FileStream file = File.Open(Application.persistentDataPath + "/playerInfo.dat", FileMode.Open);
             LoginAuth data = (LoginAuth)bf.Deserialize(file);
             file.Close();
             loginAuth = data;
+            Debugging.instance.DebugLog($"LoadLoginAuth >> {loginAuth}");
+
+            return loginAuth;
         }
+
+        Debugging.instance.DebugLog($"::: LoginAuth IsNullOrEmpty(playerInfo.dat)");
+        return null;
     }
+
+
+    public string GetUserToken()
+    {
+        string token = FindObjectOfType<FirebaseMSGSet>().userToken;
+        if (string.IsNullOrEmpty(token))
+        {
+            Debugging.instance.DebugLog($"::: IsNullOrEmpty(FCM_token)");
+            return null;
+        }
+
+        return token;
+    }
+
+
+
+
 
     //void OnGUI()
     //{

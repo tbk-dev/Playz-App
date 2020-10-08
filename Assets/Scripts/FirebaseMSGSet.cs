@@ -28,12 +28,13 @@ public class FirebaseMSGSet : MonoBehaviour
     public void CheckAndFixDependencies()
     {
         Debugging.instance.Loglate("Start Firebase Messaging CheckAndFixDependencies");
+
         //Firebase.FirebeApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
         Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
         {
             dependencyStatus = task.Result;
             //Debugging.instance.Loglate($"Current dependency status: {dependencyStatus.ToString()});
-
+            
             if (dependencyStatus == Firebase.DependencyStatus.Available)
             {
                 ToggleTokenOnInit();
