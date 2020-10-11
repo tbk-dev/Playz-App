@@ -56,8 +56,6 @@ public class PluginInit : MonoBehaviour
             webViewObject = FindObjectOfType<WebViewObject>();
 
         sampleWebView = FindObjectOfType<SampleWebView>();
-        
-
     }
 
 
@@ -101,10 +99,9 @@ public class PluginInit : MonoBehaviour
 
         GetUnityActivity();
 
-        //string packageName = "com.technoblood.playzWebapp.PlayzUtill";
         string packageName = "com.technoblood.playzWebapp.FCMService";
 
-        //var FCMServiceClass = GetAndroidJavaClass(packageName); //using 사용후으로 해제되면서 class에서 instance를 가져오지 못하는 문제가 있는것으로 추정
+        //todo var FCMServiceClass = GetAndroidJavaClass(packageName); //using 사용후으로 해제되면서 class에서 instance를 가져오지 못하는 문제가 있는것으로 추정
         using (var FCMServiceClass = new AndroidJavaClass(packageName))
         {
             if (FCMServiceClass != null)
@@ -118,7 +115,7 @@ public class PluginInit : MonoBehaviour
             }
         }
 
-        //unityContext를 설정한다
+        //unityContext를 세팅한다
         if (fcmPluginInstance != null)
         {
             fcmPluginInstance.Call("setContext", activityContext);
@@ -137,9 +134,6 @@ public class PluginInit : MonoBehaviour
 
     public void LangBtn()
     {
-
-        //var LeanLocalization = FindObjectOfType<LeanLocalization>();
-
         if (LeanLocalization.CurrentLanguage == "Korean")
         {
             LeanLocalization.CurrentLanguage = "VietNam";
@@ -164,9 +158,8 @@ public class PluginInit : MonoBehaviour
         //soundNotiSlider.value = Convert.ToSingle(GetPreferenceBool(soundNoti));
         //vibNotiSlider.value = Convert.ToSingle(GetPreferenceBool(vibNoti));
 
-
-        //toggleReceiveInfo.isOn = GetPreferenceBool(receiveInfo);
-        toggleReceiveInfo.isOn = Firebase.Messaging.FirebaseMessaging.TokenRegistrationOnInitEnabled;        //GetPreferenceBool(receiveInfo);
+        toggleReceiveInfo.isOn = GetPreferenceBool(receiveInfo);
+        //toggleReceiveInfo.isOn = Firebase.Messaging.FirebaseMessaging.TokenRegistrationOnInitEnabled;        //GetPreferenceBool(receiveInfo);
         Debugging.instance.DebugLog($"toggleReceiveInfo : {toggleReceiveInfo.isOn}");
 
         TokenRegistrationOnInitEnabled(toggleReceiveInfo.isOn);
@@ -176,14 +169,10 @@ public class PluginInit : MonoBehaviour
         toggleVibNoti.isOn = GetPreferenceBool(vibNoti);
         Debugging.instance.DebugLog($"toggleVibNoti : {toggleVibNoti.isOn}");
 
-        Debugging.instance.DebugLog($"end InitSetting");
     }
-
-    /////36개
 
     public void VibrateAction(int ms = 500)
     {
-
 #if UNITY_ANDROID
         Debugging.instance.DebugLog("run VibrateAction");
         try
@@ -290,18 +279,29 @@ public class PluginInit : MonoBehaviour
     private void ToggleReceiveInfo_ButtonEvent(bool isOn)
     {
         Debugging.instance.DebugLog($" ToggleReceiveInfo  {isOn}");
-        StartCoroutine(sampleWebView.SendToken(SampleWebView.REQUEST_TYPE.Delete, sampleWebView.LoadLoginAuth()));
-        SetPreferencBool(receiveInfo, isOn);
-
         //TokenRegistrationOnInitEnabled(isOn);
+
+        //todo 안드로이드에서도 통신결과에 따라 옵션을 설정하려면 주석해제
+//#if UNITY_ANDROID
+//        StartCoroutine(sampleWebView.SendToken(SampleWebView.REQUEST_TYPE.Delete, sampleWebView.LoadLoginAuth()));
+//        SetPreferencBool(receiveInfo, isOn);
+//#elif UNITY_IOS
+        StartCoroutine(sampleWebView.SendToken(SampleWebView.REQUEST_TYPE.Delete, sampleWebView.LoadLoginAuth(), ApiAction));
+//#endif
+    }
+
+    //딜리트 결과에 따라 알림설정변경
+    void ApiAction(bool isOn)
+    {
+        SetPreferencBool(receiveInfo, isOn);
     }
 
     private void TokenRegistrationOnInitEnabled(bool isOn)
     {
         //todo 구독관리1
         Debugging.instance.DebugLog($"run TokenRegistrationOnInitEnabled");
-        //Firebase.Messaging.FirebaseMessaging.TokenRegistrationOnInitEnabled = ison;
-        FindObjectOfType<FirebaseMSGSet>().ToggleTokenOnInit();
+        Firebase.Messaging.FirebaseMessaging.TokenRegistrationOnInitEnabled = isOn;
+        //FindObjectOfType<FirebaseMSGSet>().ToggleTokenOnInit();
 
 #if UNITY_ANDROID
         if (fcmPluginInstance == null)
@@ -312,13 +312,12 @@ public class PluginInit : MonoBehaviour
 
         fcmPluginInstance.Call("SetActiveFCM", isOn);
         //fcmPluginInstance.Call("SetActiveFCM", ison, true); //알림 수신 설정시에 토큰 삭제가 필요 한 경우 인자추가
-        Debugging.instance.DebugLog(" end ANDROID SetActiveFCM");
 
+        Debugging.instance.DebugLog(" end ANDROID SetActiveFCM");
 
 #elif UNITY_IOS
         Debugging.instance.DebugLog($"TokenRegistrationOnInitEnabled call IOS");
 #endif
-
 
         //todo 새로 구독후 토큰값이 바뀌는지 확인후에 바뀐다면 서버로 전송
     }
@@ -333,16 +332,6 @@ public class PluginInit : MonoBehaviour
         Debugging.instance.DebugLog(" ToggleSoundNoti");
         SetPreferencBool(soundNoti, isOn);
     }
-    /*
-     
-        
-#if UNITY_ANDROID
-#elif UNITY_IOS
-        Debugging.instance.DebugLog($"preference call IOS");
-#endif
-
-
-    */
 
     private void SetPreferencBool(string prefKey, bool value)
     {
@@ -364,8 +353,9 @@ public class PluginInit : MonoBehaviour
     private bool GetPreferenceBool(string prefKey)
     {
         var playerPref = Convert.ToBoolean(PlayerPrefs.GetInt(prefKey));
+        if (playerPref)
+            return playerPref;
 
-        bool preference = false;
 #if UNITY_ANDROID
         if (fcmPluginInstance == null)
         {
@@ -373,7 +363,7 @@ public class PluginInit : MonoBehaviour
             return false;
         }
 
-        preference = fcmPluginInstance.Call<bool>("getPreferenceBool", prefKey, activityContext);
+        playerPref = fcmPluginInstance.Call<bool>("getPreferenceBool", prefKey, activityContext);
         //유니티저장
         //PlayerPrefs.SetString(DeviceIdKey, preference);
         //PlayerPrefs.Save();
@@ -381,8 +371,8 @@ public class PluginInit : MonoBehaviour
 #elif UNITY_IOS
         Debugging.instance.DebugLog($"GetPreferenceBool call IOS");
 #endif
-        Debugging.instance.DebugLog($"preference {prefKey} val : {preference}");
-        return preference;
+        Debugging.instance.DebugLog($"preference {prefKey} val : {playerPref}");
+        return playerPref;
     }
 
     private void SetPreferenceString(string prefKey, string value)
@@ -404,7 +394,9 @@ public class PluginInit : MonoBehaviour
     private string GetPreferenceString(string prefKey)
     {
         var playerPref = PlayerPrefs.GetString(prefKey);
-        string preference = "";
+        if (string.IsNullOrEmpty(playerPref))
+            return playerPref;
+
 #if UNITY_ANDROID
         if (fcmPluginInstance == null)
         {
@@ -412,7 +404,7 @@ public class PluginInit : MonoBehaviour
             return null;
         }
 
-        preference = fcmPluginInstance.Call<string>("getPreferenceString", prefKey, activityContext);
+        playerPref = fcmPluginInstance.Call<string>("getPreferenceString", prefKey, activityContext);
         //유니티저장
         //PlayerPrefs.SetString(DeviceIdKey, savedPreference);
         //PlayerPrefs.Save();
@@ -420,8 +412,8 @@ public class PluginInit : MonoBehaviour
 #elif UNITY_IOS
         Debugging.instance.DebugLog($"preference call IOS");
 #endif
-        Debugging.instance.DebugLog($"preference {prefKey} val : {preference}");
-        return preference;
+        Debugging.instance.DebugLog($"preference {prefKey} val : {playerPref}");
+        return playerPref;
     }
 
 

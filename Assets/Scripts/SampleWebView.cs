@@ -303,8 +303,9 @@ public class SampleWebView : MonoBehaviour
     }
 
 
+
     //http://dev-api.playz.virtual-gate.co.kr/member/100059/fcm/token
-    public IEnumerator SendToken(REQUEST_TYPE _TYPE, LoginAuth loginAuth)
+    public IEnumerator SendToken(REQUEST_TYPE _TYPE, LoginAuth loginAuth, System.Action<bool> callback = null)
     {
         var token = GetUserToken();
 
@@ -354,30 +355,35 @@ public class SampleWebView : MonoBehaviour
         if (www.isNetworkError || www.isHttpError)
         {
             Debug.Log($"Request Error :: {www.error}");
+            callback?.Invoke(false);
+
             yield return null;
         }
+        else
+        {
+            //todo 전송 성공시 상태알림 (버튼 on off처리)
+            callback?.Invoke(true);
 
-        // Show results as text
-        //Debug.Log(www.downloadHandler.text);
+            // Or retrieve results as binary data
+            Debugging.instance.DebugLog("::: downloadHandler " + www.downloadHandler.text);
 
-        // Or retrieve results as binary data
-        Debugging.instance.DebugLog("::: downloadHandler " + www.downloadHandler.text);
+            // Show results as text
+            //byte[] results = www.downloadHandler.data;
+            ////string str = Encoding.Default.GetString(results);
 
-        //byte[] results = www.downloadHandler.data;
-        ////string str = Encoding.Default.GetString(results);
+            //json 오브젝트 변환
+            //var JsonObject = ParsingJson2TeamInfoList(str);
+            //ActiveRequestEvent(JsonObject);
 
-        //json 오브젝트 변환
-        //var JsonObject = ParsingJson2TeamInfoList(str);
-        //ActiveRequestEvent(JsonObject);
-
-        //파일로 저장
-        //    using (FileStream file = new FileStream(Application.dataPath + "\\urls33333333333333.txt", FileMode.Create, FileAccess.ReadWrite, FileShare.Read))   // 지정된 경로에 파일을 생성 
-        //    {
-        //        // 생성된 파일에 바이트배열로 저장한 컨텐츠 파일을 씀
-        //        file.Write(results, 0, results.Length);
-        //        Debug.LogError("!!! : " + results);
-        //    }
-        yield return null;
+            //파일로 저장
+            //    using (FileStream file = new FileStream($"{Application.dataPath}\\result.txt", FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
+            //    {
+            //        // 생성된 파일에 바이트배열로 저장한 컨텐츠 파일을 씀
+            //        file.Write(results, 0, results.Length);
+            //        Debug.LogError("!!! : " + results);
+            //    }
+            yield return null;
+        }
     }
 
 
