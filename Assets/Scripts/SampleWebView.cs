@@ -141,25 +141,8 @@ public class SampleWebView : MonoBehaviour
             },
             ld: (msg) =>
             {
+
                 Debugging.instance.DebugLog(string.Format("CallOnLoaded[{0}]", msg));
-
-                if (Debugging.instance.UrlText != null)
-                    Debugging.instance.UrlText.text = msg;
-
-                if (msg.Contains(@"response_type=jwt"))
-                {
-                    CallInnerText();
-                }
-                else if (msg.Contains(@"member/login"))
-                {
-                    var cookies = webViewObject.GetCookies(Url);
-                    Debugging.instance.DebugLog($"cookies :: {cookies}");
-                }
-                else
-                {
-                    //outher
-                }
-
 
 #if UNITY_EDITOR_OSX || !UNITY_ANDROID
                 // NOTE: depending on the situation, you might prefer
@@ -204,6 +187,23 @@ public class SampleWebView : MonoBehaviour
 #endif
 #endif
 
+                if (Debugging.instance.UrlText != null)
+                    Debugging.instance.UrlText.text = msg;
+
+                if (msg.Contains(@"response_type=jwt"))
+                {
+                    CallInnerText();
+                }
+                else if (msg.Contains(@"member/login"))
+                {
+                    var cookies = webViewObject.GetCookies(Url);
+                    Debugging.instance.DebugLog($"cookies :: {cookies}");
+                }
+                else
+                {
+                    //outher
+                }
+                
                 //ua: "custom user agent string",
                 //webViewObject.EvaluateJS(@"Unity.call('ua1 = ' + navigator.userAgent)");
 
@@ -222,8 +222,8 @@ public class SampleWebView : MonoBehaviour
         else
             webViewObject.SetMargins(0, 0, 0, (int)(Screen.height - 192));
 
-        //Debug.Log($"log >>> : height : {Screen.height} , 0.1 : {(int)(Screen.height * 0.1)}  차이 {Screen.height- (int)(Screen.height * 0.1)}  ");
-        //Debug.Log($"log >>> : width : {Screen.width} , 0.1 : {(int)(Screen.width * 0.1)}  차이 {Screen.width - (int)(Screen.width * 0.1)}  ");
+        //Debug.Log($"log >>> : height : {Screen.height} , 0.1 : {(int)(Screen.height * 0.1)}  ???? {Screen.height- (int)(Screen.height * 0.1)}  ");
+        //Debug.Log($"log >>> : width : {Screen.width} , 0.1 : {(int)(Screen.width * 0.1)}  ???? {Screen.width - (int)(Screen.width * 0.1)}  ");
         webViewObject.SetVisibility(true);
         
 #if !UNITY_WEBPLAYER && !UNITY_WEBGL
@@ -289,7 +289,6 @@ public class SampleWebView : MonoBehaviour
 
     public void CallInnerText()
     {
-        //webViewObject.EvaluateJS("Unity.call('"+tag+">>> '+ document.documentElement.innerText.toString());");
         webViewObject.EvaluateJS("Unity.call(document.documentElement.innerText.toString());");
         STATE = LOGINSTATE.receivewaitjson;
     }
@@ -310,8 +309,8 @@ public class SampleWebView : MonoBehaviour
         var token = GetUserToken();
 
         string adress = $"{host}/member/{loginAuth.member_no}/fcm/token?t={DateTime.Now.Millisecond}";
-        Debugging.instance.DebugLog("::: adress " + adress);
-        Debugging.instance.DebugLog("::: access_token : " + loginAuth.token.access_token);
+        Debugging.instance.DebugLog($"::: adress {adress}");
+        Debugging.instance.DebugLog($"::: access_token : {loginAuth.token.access_token}");
         Debugging.instance.DebugLog($"::: FCM_token : {token}");
 
 
@@ -369,7 +368,7 @@ public class SampleWebView : MonoBehaviour
 
             // Show results as text
             //byte[] results = www.downloadHandler.data;
-            ////string str = Encoding.Default.GetString(results);
+            //string str = Encoding.Default.GetString(results);
 
             //json 오브젝트 변환
             //var JsonObject = ParsingJson2TeamInfoList(str);
@@ -389,7 +388,6 @@ public class SampleWebView : MonoBehaviour
 
     IEnumerator GetTimeTable(string suburl)
     {
-
         string adress = $"{suburl}?t={DateTime.Now.Millisecond}";
 
         UnityWebRequest www = UnityWebRequest.Get(adress);
@@ -410,7 +408,6 @@ public class SampleWebView : MonoBehaviour
 
         yield return null;
     }
-
 
     //클래스 저장
     public void SaveLoginAuth(LoginAuth loginAuthdata)
@@ -459,40 +456,5 @@ public class SampleWebView : MonoBehaviour
         return token;
     }
 
-
-
-
-
-    //void OnGUI()
-    //{
-    //    GUI.enabled = webViewObject.CanGoBack();
-    //    if (GUI.Button(new Rect(10, 10, 80, 80), "<")) {
-    //        webViewObject.GoBack();
-    //    }
-    //    GUI.enabled = true;
-
-    //    GUI.enabled = webViewObject.CanGoForward();
-    //    if (GUI.Button(new Rect(100, 10, 80, 80), ">")) {
-    //        webViewObject.GoForward();
-    //    }
-    //    GUI.enabled = true;
-
-    //    GUI.TextField(new Rect(200, 10, 300, 80), "" + webViewObject.Progress());
-
-    //    if (GUI.Button(new Rect(600, 10, 80, 80), "*")) {
-    //        var g = GameObject.Find("WebViewObject");
-    //        if (g != null) {
-    //            Destroy(g);
-    //        } else {
-    //            StartCoroutine(Start());
-    //        }
-    //    }
-    //    GUI.enabled = true;
-
-    //    if (GUI.Button(new Rect(700, 10, 80, 80), "c")) {
-    //        Debug.Log(webViewObject.GetCookies(Url));
-    //    }
-    //    GUI.enabled = true;
-    //}
 
 }
