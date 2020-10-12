@@ -5387,7 +5387,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd888531fd06d46a4acece5416353da8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bitmapRefreshCycle: 1
 --- !u!114 &568469722
 MonoBehaviour:
   m_ObjectHideFlags: 0

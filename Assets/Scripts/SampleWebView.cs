@@ -25,7 +25,6 @@ using System.IO;
 using System.Net.Http;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
-using UnityEngine.Networking;
 #if UNITY_2018_4_OR_NEWER
 using UnityEngine.Networking;
 #endif
@@ -141,7 +140,6 @@ public class SampleWebView : MonoBehaviour
             },
             ld: (msg) =>
             {
-
                 Debugging.instance.DebugLog(string.Format("CallOnLoaded[{0}]", msg));
 
 #if UNITY_EDITOR_OSX || !UNITY_ANDROID
@@ -206,7 +204,6 @@ public class SampleWebView : MonoBehaviour
                 
                 //ua: "custom user agent string",
                 //webViewObject.EvaluateJS(@"Unity.call('ua1 = ' + navigator.userAgent)");
-
             },
             enableWKWebView: true);
 
@@ -289,8 +286,8 @@ public class SampleWebView : MonoBehaviour
 
     public void CallInnerText()
     {
-        webViewObject.EvaluateJS("Unity.call(document.documentElement.innerText.toString());");
         STATE = LOGINSTATE.receivewaitjson;
+        webViewObject.EvaluateJS("Unity.call(document.documentElement.innerText.toString());");
     }
 
 
