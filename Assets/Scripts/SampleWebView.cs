@@ -426,13 +426,14 @@ public class SampleWebView : MonoBehaviour
 
         if (File.Exists(filePath))
         {
-            BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Open(Application.persistentDataPath + "/playerInfo.dat", FileMode.Open);
-            LoginAuth data = (LoginAuth)bf.Deserialize(file);
-            file.Close();
-            loginAuth = data;
-            Debugging.instance.DebugLog($"LoadLoginAuth >> {loginAuth}");
-
+            using (FileStream file = File.Open(Application.persistentDataPath + "/playerInfo.dat", FileMode.Open))
+            {
+                BinaryFormatter bf = new BinaryFormatter();
+                LoginAuth data = (LoginAuth)bf.Deserialize(file);
+                file.Close();
+                loginAuth = data;
+                Debugging.instance.DebugLog($"LoadLoginAuth >> {loginAuth}");
+            }
             return loginAuth;
         }
 
