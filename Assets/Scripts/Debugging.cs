@@ -183,7 +183,7 @@ public class Debugging : MonoBehaviour
             Debug.LogError($"can not print LogMessage PluginInit.instance is null");
             return;
         }
-        PluginInit.instance.LogUnity(s);
+        PluginInit.instance.LogUnity($"Ulog >>> {s}");
 #else
         Console.WriteLine($"Ulog >>> {s}");
 #endif
@@ -244,7 +244,7 @@ public class Debugging : MonoBehaviour
                 for (int i = 0; i < logArr.Length; i++)
                 {
                     if (!string.IsNullOrEmpty(logArr[i]))
-                        DebugLog($"latelog >> {logArr[i]}");
+                        DebugLog($"late >> {logArr[i]}");
                 }
             }
 

@@ -426,6 +426,7 @@ public class SampleWebView : MonoBehaviour
 
         if (File.Exists(filePath))
         {
+
             using (FileStream file = File.Open(Application.persistentDataPath + "/playerInfo.dat", FileMode.Open))
             {
                 BinaryFormatter bf = new BinaryFormatter();
@@ -437,19 +438,21 @@ public class SampleWebView : MonoBehaviour
             return loginAuth;
         }
 
-        Debugging.instance.DebugLog($"::: LoginAuth IsNullOrEmpty(playerInfo.dat)");
+        Debugging.instance.DebugLog($"::: LoadLoginAuth IsNullOrEmpty(playerInfo.dat)");
         return null;
     }
 
 
     public string GetUserToken()
     {
-        string token = FindObjectOfType<FirebaseMSGSet>().userToken;
+        string token = FindObjectOfType<FirebaseMSGSet>()?.userToken;
         if (string.IsNullOrEmpty(token))
         {
-            Debugging.instance.DebugLog($"::: IsNullOrEmpty(FCM_token)");
+            Debugging.instance.DebugLog($"::: IsNullOrEmpty(FirebaseMSGSet token)");
             return null;
         }
+
+        Debugging.instance.DebugLog($"GetUserToken : {token}");
 
         return token;
     }

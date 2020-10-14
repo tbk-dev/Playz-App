@@ -278,21 +278,22 @@ public class PluginInit : MonoBehaviour
 
     private void ToggleReceiveInfo_ButtonEvent(bool isOn)
     {
-        Debugging.instance.DebugLog($" ToggleReceiveInfo  {isOn}");
+        Debugging.instance.DebugLog($"run ToggleReceiveInfo_ButtonEvent  {isOn}");
         //TokenRegistrationOnInitEnabled(isOn);
 
         //todo 안드로이드에서도 통신결과에 따라 옵션을 설정하려면 주석해제
-//#if UNITY_ANDROID
-//        StartCoroutine(sampleWebView.SendToken(SampleWebView.REQUEST_TYPE.Delete, sampleWebView.LoadLoginAuth()));
-//        SetPreferencBool(receiveInfo, isOn);
-//#elif UNITY_IOS
+        //#if UNITY_ANDROID
+        //        StartCoroutine(sampleWebView.SendToken(SampleWebView.REQUEST_TYPE.Delete, sampleWebView.LoadLoginAuth()));
+        //        SetPreferencBool(receiveInfo, isOn);
+        //#elif UNITY_IOS
         StartCoroutine(sampleWebView.SendToken(SampleWebView.REQUEST_TYPE.Delete, sampleWebView.LoadLoginAuth(), ApiAction));
-//#endif
+        //#endif
     }
 
     //딜리트 결과에 따라 알림설정변경
     void ApiAction(bool isOn)
     {
+        Debugging.instance.DebugLog($"run ApiAction {isOn}");
         SetPreferencBool(receiveInfo, isOn);
     }
 
@@ -352,10 +353,15 @@ public class PluginInit : MonoBehaviour
     }
     private bool GetPreferenceBool(string prefKey)
     {
-        var playerPref = Convert.ToBoolean(PlayerPrefs.GetInt(prefKey));
-        if (playerPref)
-            return playerPref;
-
+        bool playerPref = true;
+        try
+        {
+            playerPref = Convert.ToBoolean(PlayerPrefs.GetInt(prefKey));
+        }
+        catch (Exception ex)
+        {
+            Debugging.instance.DebugLog($"GetPreferenceBool Exception prefKey : {prefKey}, {ex.Message}");
+        }
 #if UNITY_ANDROID
         if (fcmPluginInstance == null)
         {
@@ -371,7 +377,7 @@ public class PluginInit : MonoBehaviour
 #elif UNITY_IOS
         Debugging.instance.DebugLog($"GetPreferenceBool call IOS");
 #endif
-        Debugging.instance.DebugLog($"preference {prefKey} val : {playerPref}");
+        Debugging.instance.DebugLog($"GetPreferenceBool preference :{prefKey}, val : {playerPref}");
         return playerPref;
     }
 
