@@ -210,8 +210,8 @@ public class FirebaseMSGSet : MonoBehaviour
 
     public void ToggleTokenOnInit()
     {
-        Debug.Log($"BottonToggleTokenOnInit");
-        bool newValue = !FirebaseMessaging.TokenRegistrationOnInitEnabled;
+        Debug.Log($"run ToggleTokenOnInit");
+        bool newValue = true;//!FirebaseMessaging.TokenRegistrationOnInitEnabled;
         FirebaseMessaging.TokenRegistrationOnInitEnabled = newValue;
         Debugging.instance.Loglate("Set TokenRegistrationOnInitEnabled to " + newValue);
 

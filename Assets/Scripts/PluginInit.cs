@@ -154,15 +154,11 @@ public class PluginInit : MonoBehaviour
     private void InitSetting()
     {
         Debugging.instance.DebugLog("run InitSetting");
-        //receiveInfoSlider.value = Convert.ToSingle(GetPreferenceBool(receiveInfo));
-        //soundNotiSlider.value = Convert.ToSingle(GetPreferenceBool(soundNoti));
-        //vibNotiSlider.value = Convert.ToSingle(GetPreferenceBool(vibNoti));
+        TokenRegistrationOnInitEnabled(toggleReceiveInfo.isOn);
 
         toggleReceiveInfo.isOn = GetPreferenceBool(receiveInfo);
-        //toggleReceiveInfo.isOn = Firebase.Messaging.FirebaseMessaging.TokenRegistrationOnInitEnabled;        //GetPreferenceBool(receiveInfo);
         Debugging.instance.DebugLog($"toggleReceiveInfo : {toggleReceiveInfo.isOn}");
 
-        TokenRegistrationOnInitEnabled(toggleReceiveInfo.isOn);
 
         toggleSoundNoti.isOn = GetPreferenceBool(soundNoti);
         Debugging.instance.DebugLog($"toggleSoundNoti : {toggleSoundNoti.isOn}");
@@ -286,7 +282,11 @@ public class PluginInit : MonoBehaviour
         //        StartCoroutine(sampleWebView.SendToken(SampleWebView.REQUEST_TYPE.Delete, sampleWebView.LoadLoginAuth()));
         //        SetPreferencBool(receiveInfo, isOn);
         //#elif UNITY_IOS
-        StartCoroutine(sampleWebView.SendToken(SampleWebView.REQUEST_TYPE.Delete, sampleWebView.LoadLoginAuth(), ApiAction));
+        if (isOn)
+            StartCoroutine(sampleWebView.SendToken(SampleWebView.REQUEST_TYPE.Delete, sampleWebView.LoadLoginAuth(), ApiAction));
+        else
+            StartCoroutine(sampleWebView.SendToken(SampleWebView.REQUEST_TYPE.Post, sampleWebView.LoadLoginAuth(), ApiAction));
+
         //#endif
     }
 
@@ -336,7 +336,7 @@ public class PluginInit : MonoBehaviour
 
     private void SetPreferencBool(string prefKey, bool value)
     {
-        PlayerPrefs.SetInt(prefKey, Convert.ToInt32(value));
+        PlayerPrefs.SetString(prefKey, Convert.ToString(value));
         PlayerPrefs.Save();
 
 #if UNITY_ANDROID
@@ -356,7 +356,7 @@ public class PluginInit : MonoBehaviour
         bool playerPref = true;
         try
         {
-            playerPref = Convert.ToBoolean(PlayerPrefs.GetInt(prefKey));
+            playerPref = Convert.ToBoolean(PlayerPrefs.GetString(prefKey, "true"));
         }
         catch (Exception ex)
         {
@@ -370,10 +370,6 @@ public class PluginInit : MonoBehaviour
         }
 
         playerPref = fcmPluginInstance.Call<bool>("getPreferenceBool", prefKey, activityContext);
-        //유니티저장
-        //PlayerPrefs.SetString(DeviceIdKey, preference);
-        //PlayerPrefs.Save();
-
 #elif UNITY_IOS
         Debugging.instance.DebugLog($"GetPreferenceBool call IOS");
 #endif
