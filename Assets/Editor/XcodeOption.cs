@@ -41,11 +41,35 @@ public class XcodeOption : MonoBehaviour
         plistDoc.ReadFromFile(infoPlistPath);
 
 
+
+
         if (plistDoc.root != null)
         {
-            plistDoc.root.SetBoolean("tttttttbool", false);
-            plistDoc.root.SetString("tttttttString", "MY APP NAME");
-            plistDoc.root.SetString("FirebaseMessagingAutoInitEnabled", "No");
+            var rootDict = plistDoc.root;
+            if (rootDict["NSAppTransportSecurity"] == null)
+            {
+                rootDict.CreateDict("NSAppTransportSecurity");
+            }
+
+            rootDict["NSAppTransportSecurity"].AsDict().SetBoolean("NSAllowsArbitraryLoads", true);
+            //rootDict["NSAppTransportSecurity"].AsDict().SetBoolean("NSAllowsArbitraryLoadsInWebContent", true);
+
+            //서브도메인 http 예외 코드
+            //{
+                //var exceptionDomains = rootDict["NSAppTransportSecurity"].AsDict().CreateDict("NSExceptionDomains");
+                //var domain = exceptionDomains.CreateDict("YOURDOMAIN.com");
+
+                ////PlistElementDict exceptionsDict = allowsDict.CreateDict("NSExceptionDomains");
+                ////PlistElementDict domainDict = exceptionsDict.CreateDict("amazonaws.com");
+
+                //domain.SetBoolean("NSExceptionAllowsInsecureHTTPLoads", true);
+                //domain.SetBoolean("NSIncludesSubdomains", true);
+            //}
+
+            rootDict.SetString("UIRequiresFullScreen", "No");
+            rootDict.SetString("Status bar is initially hidden", "NO");
+            rootDict.SetString("View controller-based status bar appearance", "YES");
+            //plistDoc.root.SetString("FirebaseMessagingAutoInitEnabled", "No");
             plistDoc.WriteToFile(infoPlistPath);
         }
         else
