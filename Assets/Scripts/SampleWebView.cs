@@ -29,8 +29,9 @@ using UnityEngine;
 using UnityEngine.Networking;
 #endif
 using UnityEngine.UI;
-// Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse); 
-// Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse); 
+
+
+[Serializable]
 public class Token
 {
     public string token_type { get; set; }
@@ -39,6 +40,8 @@ public class Token
     public string refresh_token { get; set; }
 }
 
+// LoginAuth myDeserializedClass = JsonConvert.DeserializeObject<LoginAuth>(myJsonResponse); 
+[Serializable]
 public class LoginAuth
 {
     public int member_no { get; set; }
@@ -46,7 +49,7 @@ public class LoginAuth
     public string redirect { get; set; }
 }
 
-// Root myDeserializedClass = JsonConvert.DeserializeObject<SendToken>(myJsonResponse); 
+[Serializable]
 public class SendToken
 {
     public string token { get; set; }
@@ -54,7 +57,6 @@ public class SendToken
 
 public class SampleWebView : MonoBehaviour
 {
-
     enum LOGINSTATE
     {
         siteconnect,
@@ -62,6 +64,7 @@ public class SampleWebView : MonoBehaviour
         receivewaitjson,
         complete,
     }
+
     //public string Url; = //http://www.kiwooza.com/
     public string Url = "http://dev-playz.virtual-gate.co.kr";
     string host = "http://dev-api.playz.virtual-gate.co.kr";
@@ -79,11 +82,10 @@ public class SampleWebView : MonoBehaviour
 
     IEnumerator Start()
     {
-        //webViewObject = (new GameObject("WebViewObject")).AddComponent<WebViewObject>();
         webViewObject.Init(
             cb: (msg) =>
             {
-                Debugging.instance.DebugLog(string.Format("CallFromJS [ {0} ]", msg));
+                //Debugging.instance.DebugLog(string.Format("CallFromJS [ {0} ]", msg));
                 status.text = msg;
                 status.GetComponent<Animation>().Play();
                 if (STATE == LOGINSTATE.receivewaitjson)
@@ -94,6 +96,7 @@ public class SampleWebView : MonoBehaviour
                         {
                             Debugging.instance.DebugLog($"jsonSting : {msg}");
                             loginAuth = JsonConvert.DeserializeObject<LoginAuth>(msg);
+
                             SaveLoginAuth(loginAuth);
                             STATE = LOGINSTATE.complete;
                             webViewObject.EvaluateJS(@"window.location.replace('"+Url+"');");
@@ -303,12 +306,17 @@ public class SampleWebView : MonoBehaviour
     //http://dev-api.playz.virtual-gate.co.kr/member/100059/fcm/token
     public IEnumerator SendToken(REQUEST_TYPE _TYPE, LoginAuth loginAuth, System.Action<bool> callback = null)
     {
+        if(loginAuth == null)
+        {
+            Debugging.instance.DebugLog($"::: SendToken break");
+            yield break;
+        }
+
         var token = GetUserToken();
 
         string adress = $"{host}/member/{loginAuth.member_no}/fcm/token?t={DateTime.Now.Millisecond}";
         Debugging.instance.DebugLog($"::: adress {adress}");
         Debugging.instance.DebugLog($"::: access_token : {loginAuth.token.access_token}");
-        Debugging.instance.DebugLog($"::: FCM_token : {token}");
 
 
         UnityWebRequest www = new UnityWebRequest();
@@ -350,7 +358,7 @@ public class SampleWebView : MonoBehaviour
 
         if (www.isNetworkError || www.isHttpError)
         {
-            Debug.Log($"Request Error :: {www.error}");
+            Debug.Log($"::: Request Error : {www.error}");
             callback?.Invoke(false);
 
             yield return null;
@@ -361,7 +369,7 @@ public class SampleWebView : MonoBehaviour
             callback?.Invoke(true);
 
             // Or retrieve results as binary data
-            Debugging.instance.DebugLog("::: downloadHandler " + www.downloadHandler.text);
+            Debugging.instance.DebugLog($"downloadHandler {www.downloadHandler.text}");
 
             // Show results as text
             //byte[] results = www.downloadHandler.data;
@@ -417,7 +425,7 @@ public class SampleWebView : MonoBehaviour
         LoginAuth authData = loginAuthdata;
         bf.Serialize(file, authData);
         file.Close();
-        Debugging.instance.DebugLog($"SaveLoginAuth >> {filePath}");
+        Debugging.instance.DebugLog($"SaveLoginAuth :: {filePath}");
     }
 
     public LoginAuth LoadLoginAuth()
@@ -426,7 +434,6 @@ public class SampleWebView : MonoBehaviour
 
         if (File.Exists(filePath))
         {
-
             using (FileStream file = File.Open(Application.persistentDataPath + "/playerInfo.dat", FileMode.Open))
             {
                 BinaryFormatter bf = new BinaryFormatter();
@@ -452,7 +459,7 @@ public class SampleWebView : MonoBehaviour
             return null;
         }
 
-        Debugging.instance.DebugLog($"GetUserToken : {token}");
+        Debugging.instance.DebugLog($":: GetUserToken : {token}");
 
         return token;
     }
