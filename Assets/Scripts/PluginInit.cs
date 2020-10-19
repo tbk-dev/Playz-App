@@ -49,6 +49,7 @@ public class PluginInit : MonoBehaviour
         Screen.fullScreen = false;
     }
 
+    WebViewObject webViewObject;
     SampleWebView sampleWebView;
     public void Start()
     {
@@ -68,8 +69,10 @@ public class PluginInit : MonoBehaviour
         InitSetting();
 
         toggleReceiveInfo.ButtonEvent += ToggleReceiveInfo_ButtonEvent;
-        toggleSoundNoti.ButtonEvent += ToggleSoundNoti_ButtonEvent;
-        toggleVibNoti.ButtonEvent += ToggleVibNoti_ButtonEvent;
+        if (toggleSoundNoti != null)
+            toggleSoundNoti.ButtonEvent += ToggleSoundNoti_ButtonEvent;
+        if (toggleVibNoti != null)
+            toggleVibNoti.ButtonEvent += ToggleVibNoti_ButtonEvent;
 
     }
 
@@ -159,11 +162,17 @@ public class PluginInit : MonoBehaviour
         toggleReceiveInfo.isOn = GetPreferenceBool(receiveInfo);
         Debugging.instance.DebugLog($"toggleReceiveInfo : {toggleReceiveInfo.isOn}");
 
+        if (toggleSoundNoti != null)
+        {
+            toggleSoundNoti.isOn = GetPreferenceBool(soundNoti);
+            Debugging.instance.DebugLog($"toggleSoundNoti : {toggleSoundNoti.isOn}");
+        }
 
-        toggleSoundNoti.isOn = GetPreferenceBool(soundNoti);
-        Debugging.instance.DebugLog($"toggleSoundNoti : {toggleSoundNoti.isOn}");
-        toggleVibNoti.isOn = GetPreferenceBool(vibNoti);
-        Debugging.instance.DebugLog($"toggleVibNoti : {toggleVibNoti.isOn}");
+        if (toggleVibNoti != null)
+        {
+            toggleVibNoti.isOn = GetPreferenceBool(vibNoti);
+            Debugging.instance.DebugLog($"toggleVibNoti : {toggleVibNoti.isOn}");
+        }
 
     }
 
@@ -183,94 +192,6 @@ public class PluginInit : MonoBehaviour
         Debugging.instance.DebugLog($"VibrateAction call IOS");
 #endif
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    #region ::::::::: button test
-
-    public void CallFCM()
-    {
-        Debugging.instance.DebugLog("CallFCM");
-        ShowToastMessage("wellcom");
-    }
-    WebViewObject webViewObject;
-
-    public void CallTest1()
-    {
-        Debugging.instance.DebugLog(" CallTest1");
-        webViewObject.EvaluateJS("Unity.call(document.documentElement.innerText.toString());");
-        //VibrateAction();
-    }
-
-    public void CallTest2()
-    {
-        Debugging.instance.DebugLog(" CallTest2");
-        webViewObject.EvaluateJS("Unity.call(location);");
-
-        //        webViewObject.EvaluateJS(@"
-        //+                    (function() {
-        //+                           console.log('log test');
-
-        //+                        if (window.Unity != null) {
-        //+                            var innerText = document.documentElement.innerText;
-        //+                           console.log('innerText  ' + innerText);
-        //+                            var jsonText = innerText.substring(innerText.indexOf('{'), innerText.lastIndexOf('}')+1);
-        //+                           console.log('jsonText  ' + jsonText);
-
-        //+                                window.Unity.call(jsonText);
-        //+                        }
-        //+                    });
-        //+                    ");
-
-
-        //VibrateAction(500);
-    }
-
-    public void CallTest3()
-    {
-        Debugging.instance.DebugLog(" CallTest3");
-        webViewObject.EvaluateJS("Unity.call(document.body.innertext);");
-
-
-        //        webViewObject.EvaluateJS(@"
-        //+                    function() {
-        //+                           var  inti = 1+12345;
-        //+                                window.Unity.call('log : '+ inti );
-        //+                    };
-        //+                    ");
-
-    }
-
-
-    public void CallTestbtn1()
-    {
-        Debugging.instance.DebugLog(" CallTestbtn1");
-        webViewObject.EvaluateJS(@"Unity.call('ua=' + 'tsetttttt')");
-
-    }
-
-    public void CallTestbtn2()
-    {
-        Debugging.instance.DebugLog(" CallTestbtn2");
-        webViewObject.EvaluateJS(@" 
-                   window.Unity = { 
-                     call: function(msg) { 
-                       window.location = 'unity:' + msg; 
-                     } 
-                   } 
-                 ");
-
-    }
-
-    public void CallTestbtn3()
-    {
-        Debugging.instance.DebugLog(" CallTestbtn3");
-        webViewObject.EvaluateJS(@"Unity.call('anchor');");
-
-    }
-
-    #endregion
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
     private void ToggleReceiveInfo_ButtonEvent(bool isOn)
     {
@@ -519,8 +440,10 @@ public class PluginInit : MonoBehaviour
     public void OnDisable()
     {
         toggleReceiveInfo.ButtonEvent -= ToggleReceiveInfo_ButtonEvent;
-        toggleSoundNoti.ButtonEvent -= ToggleSoundNoti_ButtonEvent;
-        toggleVibNoti.ButtonEvent -= ToggleVibNoti_ButtonEvent;
+        if (toggleSoundNoti != null)
+            toggleSoundNoti.ButtonEvent -= ToggleSoundNoti_ButtonEvent;
+        if (toggleVibNoti != null)
+            toggleVibNoti.ButtonEvent -= ToggleVibNoti_ButtonEvent;
     }
 
     #region android plugin

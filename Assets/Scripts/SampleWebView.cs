@@ -217,10 +217,14 @@ public class SampleWebView : MonoBehaviour
         //webViewObject.SetAlertDialogEnabled(false);
         //webViewObject.SetURLPattern("", "^https://.*youtube.com", "^https://.*google.com");
 
-        if (Screen.width < Screen.height)
-            webViewObject.SetMargins(0, 0, 0, (int)(Screen.height * 0.1));
+        if (Screen.safeArea.width < Screen.safeArea.height)
+        {
+            webViewObject.SetMargins(0, 0, 0, (int)(Screen.safeArea.height * 0.1));
+        }
         else
-            webViewObject.SetMargins(0, 0, 0, (int)(Screen.height - 192));
+        {
+            webViewObject.SetMargins(0, 0, 0, (int)(Screen.safeArea.height - 192));
+        }
 
         //Debug.Log($"log >>> : height : {Screen.height} , 0.1 : {(int)(Screen.height * 0.1)}  ???? {Screen.height- (int)(Screen.height * 0.1)}  ");
         //Debug.Log($"log >>> : width : {Screen.width} , 0.1 : {(int)(Screen.width * 0.1)}  ???? {Screen.width - (int)(Screen.width * 0.1)}  ");
@@ -315,14 +319,14 @@ public class SampleWebView : MonoBehaviour
         var token = GetUserToken();
 
         string adress = $"{host}/member/{loginAuth.member_no}/fcm/token?t={DateTime.Now.Millisecond}";
-        Debugging.instance.DebugLog($"::: adress {adress}");
-        Debugging.instance.DebugLog($"::: access_token : {loginAuth.token.access_token}");
+        Debugging.instance.DebugLog($"adress {adress}");
+        Debugging.instance.DebugLog($"access_token : {loginAuth.token.access_token}");
 
 
         UnityWebRequest www = new UnityWebRequest();
         if (_TYPE == REQUEST_TYPE.Post)
         {
-            Debugging.instance.DebugLog($"::: REQUEST_TYPE.Post");
+            Debugging.instance.DebugLog($"REQUEST_TYPE.Post");
             WWWForm form = new WWWForm();
             form.AddField("token", token);
 
@@ -331,7 +335,7 @@ public class SampleWebView : MonoBehaviour
         }
         else if (_TYPE == REQUEST_TYPE.Delete)
         {
-            Debugging.instance.DebugLog($"::: REQUEST_TYPE.Delete");
+            Debugging.instance.DebugLog($"REQUEST_TYPE.Delete");
             www = UnityWebRequest.Delete(adress);
 
             //www.useHttpContinue = useHttpContinue;
@@ -459,7 +463,7 @@ public class SampleWebView : MonoBehaviour
             return null;
         }
 
-        Debugging.instance.DebugLog($":: GetUserToken : {token}");
+        Debugging.instance.DebugLog($"GetUserToken : {token}");
 
         return token;
     }

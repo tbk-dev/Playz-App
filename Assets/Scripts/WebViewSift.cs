@@ -40,12 +40,18 @@ public class WebViewSift : MonoBehaviour
             if (SettingMenuOBJ.isActiveMenu)
             {
                 if (webViewObject.GetVisibility())
+                {
                     webViewObject.SetVisibility(false);
+                    //SettingMenuOBJ.gameObject.SetActive(true);
+                }
             }
             else
             {
                 if (webViewObject.GetVisibility() == false)
+                {
                     webViewObject.SetVisibility(true);
+                    //SettingMenuOBJ.gameObject.SetActive(false);
+                }
             }
         }
     }
