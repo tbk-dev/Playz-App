@@ -7,7 +7,6 @@ public class SettingMenu : MonoBehaviour
 
     public GameObject SettingOBJ;
     private RectTransform settingRectObj;
-    public RectTransform buttomRect;
     public bool isActiveMenu = false;
 
     // Start is called before the first frame update

@@ -80,6 +80,19 @@ public class SampleWebView : MonoBehaviour
         LoadLoginAuth();
     }
 
+    // cf. https://answers.unity.com/questions/1013011/convert-recttransform-rect-to-screen-space.html?childToView=1628573#answer-1628573
+    public static Bounds GetRectTransformBounds(RectTransform transform)
+    {
+        var corners = new Vector3[4];
+        transform.GetWorldCorners(corners);
+        var bounds = new Bounds(corners[0], Vector3.zero);
+        for (var i = 1; i < 4; i++)
+        {
+            bounds.Encapsulate(corners[i]);
+        }
+        return bounds;
+    }
+
     IEnumerator Start()
     {
         webViewObject.Init(
@@ -219,12 +232,39 @@ public class SampleWebView : MonoBehaviour
 
         if (Screen.safeArea.width < Screen.safeArea.height)
         {
-            webViewObject.SetMargins(0, 0, 0, (int)(Screen.safeArea.height * 0.1));
+            Rect bounds = Screen.safeArea;
+
+            var bottomY = ((Screen.height - bounds.max.y)) - bounds.min.y;
+            webViewObject.SetMargins(
+            (int)bounds.min.x,
+            (int)(Screen.height - bounds.max.y),
+            (int)(Screen.width - bounds.max.x),
+            (int)bottomY);
+            //(int)bounds.min.y);
+
+            //webViewObject.SetMargins(0, 0, 0, (int)((Screen.safeArea.y + Screen.safeArea.height) * 0.1));
         }
         else
         {
-            webViewObject.SetMargins(0, 0, 0, (int)(Screen.safeArea.height - 192));
+            webViewObject.SetMargins(0, 0, 0, (int)((Screen.safeArea.y +Screen.safeArea.height) - 192));
         }
+        
+
+        Debugging.instance.DebugLog($"transform.position);" + webViewObject.transform.position);
+        Debugging.instance.DebugLog($"transform.localScale);" + webViewObject.transform.localScale);
+        
+        
+        Debugging.instance.DebugLog($"Screen width   L    " + Screen.width );
+        Debugging.instance.DebugLog($"Screen height   L    " + Screen.height );
+        Debugging.instance.DebugLog($"safeArea.x   L    " + Screen.safeArea.x );
+        Debugging.instance.DebugLog($"safeArea.y   L    " + Screen.safeArea.y );
+        Debugging.instance.DebugLog($"safeArea.width   L    " + Screen.safeArea.width );
+        Debugging.instance.DebugLog($"safeArea.height   L    " + Screen.safeArea.height );
+        Debugging.instance.DebugLog($"safeArea.xMin   L    " + Screen.safeArea.xMin );
+        Debugging.instance.DebugLog($"safeArea.xMax   L    " + Screen.safeArea.xMax );
+        Debugging.instance.DebugLog($"safeArea.yMin   L    " + Screen.safeArea.yMin );
+        Debugging.instance.DebugLog($"safeArea.yMax   L    " + Screen.safeArea.yMax );
+        Debugging.instance.DebugLog($"safeArea.center   L    " + Screen.safeArea.center );
 
         //Debug.Log($"log >>> : height : {Screen.height} , 0.1 : {(int)(Screen.height * 0.1)}  ???? {Screen.height- (int)(Screen.height * 0.1)}  ");
         //Debug.Log($"log >>> : width : {Screen.width} , 0.1 : {(int)(Screen.width * 0.1)}  ???? {Screen.width - (int)(Screen.width * 0.1)}  ");
