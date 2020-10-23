@@ -33,18 +33,29 @@ public class SettingMenu : MonoBehaviour
         }
     }
 
+    Vector3 hidePos;
+    Vector3 visiblePos;
     public void HideSettingMenu()
     {
-        settingRectObj.anchoredPosition = new Vector3(settingRectObj.rect.width, 0);
+        settingRectObj.anchoredPosition = hidePos;
         settingRectObj.gameObject.SetActive(false);
         isActiveMenu = false;
     }
 
     public void ShowSettingMenu()
     {
-        settingRectObj.anchoredPosition = new Vector3(0, 0);
+        settingRectObj.anchoredPosition = visiblePos;
         settingRectObj.gameObject.SetActive(true);
         isActiveMenu = true;
+    }
+
+    public void SetHidePosSettingMenu(Vector3 pos)
+    {
+        hidePos = pos;
+    }
+    public void SetVisiblePosSettingMenu(Vector3 pos)
+    {
+        visiblePos = pos;
     }
 
 }

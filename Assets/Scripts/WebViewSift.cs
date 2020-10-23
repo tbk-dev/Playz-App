@@ -59,25 +59,30 @@ public class WebViewSift : MonoBehaviour
 
     public void WebViewGoBack()
     {
+        Debugging.instance.DebugLog("WebViewGoBack");
         webViewObject.GoBack();
     }
 
     public void WebViewGoForward()
     {
+        Debugging.instance.DebugLog("WebViewGoForward");
         webViewObject.GoForward();
     }
 
     public void WebViewReflash()
     {
+        Debugging.instance.DebugLog("WebViewReflash");
         webViewObject.EvaluateJS("location.reload(true)");
     }
 
     public void WebViewGoLogin()
     {
+        Debugging.instance.DebugLog("WebViewGoLogin");
         webViewObject.LoadURL($"{mainhost}/member/login");
     }
     public void WebViewGoLoginjwtp()
     {
+        Debugging.instance.DebugLog("WebViewGoLoginjwtp");
         webViewObject.LoadURL($"{mainhost}/member/login?response_type=jwt");
     }
 
@@ -88,6 +93,7 @@ public class WebViewSift : MonoBehaviour
     //public string mainhost = "http://www.kiwooza.com/";
     public void WebViewGoHome()
     {
+        Debugging.instance.DebugLog("WebViewGoHome");
         CloseSideMenu();
 
         webViewObject.LoadURL(mainhost);
@@ -95,6 +101,7 @@ public class WebViewSift : MonoBehaviour
     }
     public void WebViewGoMap()
     {
+        Debugging.instance.DebugLog("WebViewGoMap");
         CloseSideMenu();
 
         //webViewObject.LoadURL($"{mainhost}/planet#direct");
@@ -103,6 +110,7 @@ public class WebViewSift : MonoBehaviour
 
     public void WebViewGoWorkShop()
     {
+        Debugging.instance.DebugLog("WebViewGoWorkShop");
         CloseSideMenu();
 
         webViewObject.LoadURL($"{mainhost}/party");
@@ -111,6 +119,7 @@ public class WebViewSift : MonoBehaviour
 
     public void WebViewGoNotice()
     {
+        Debugging.instance.DebugLog("WebViewGoNotice");
         CloseSideMenu();
 
         webViewObject.LoadURL($"{mainhost}/board/notice");
