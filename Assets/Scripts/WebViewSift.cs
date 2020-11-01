@@ -49,7 +49,8 @@ public class WebViewSift : MonoBehaviour
             {
                 if (webViewObject.GetVisibility() == false)
                 {
-                    webViewObject.SetVisibility(true);
+                    //todo
+                    webViewObject.SetVisibility(false);
                     //SettingMenuOBJ.gameObject.SetActive(false);
                 }
             }

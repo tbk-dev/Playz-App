@@ -104,16 +104,6 @@ namespace Crystal
         [SerializeField] bool ConformY = true;  // Conform to screen safe area on Y-axis (default true, disable to ignore)
         [SerializeField] bool Logging = false;  // Conform to screen safe area on Y-axis (default true, disable to ignore)
 
-        public GameObject Crossheir;
-        public void CreateCrossheir(Vector3 pos, string name = null)
-        {
-            var crossheir = Instantiate(Crossheir, transform);
-            crossheir.transform.position = pos;
-            crossheir.name = string.IsNullOrEmpty(name) ? pos.ToString() : name;
-            crossheir.GetComponentInChildren<UnityEngine.UI.Text>().text = crossheir.name;
-            Debug.LogWarning($"{crossheir.name} :  {pos}");
-        }
-
         void Awake()
         {
             Panel = GetComponent<RectTransform>();
@@ -123,8 +113,6 @@ namespace Crystal
                 Debug.LogError("Cannot apply safe area - no RectTransform found on " + name);
                 Destroy(gameObject);
             }
-
-            Refresh();
         }
 
         void Update()
@@ -137,6 +125,9 @@ namespace Crystal
         {
             Rect safeArea = GetSafeArea();
 
+            Debug.Log($">>>!!! Panel.rect {Panel.rect}");
+            Debug.Log($">>>!!! Screen.safeArea {Screen.safeArea}");
+            Debug.Log($">>>!!! LastSafeArea {LastSafeArea}");
             if (safeArea != LastSafeArea
                 || Screen.width != LastScreenSize.x
                 || Screen.height != LastScreenSize.y
@@ -148,19 +139,101 @@ namespace Crystal
                 LastScreenSize.y = Screen.height;
                 LastOrientation = Screen.orientation;
 
-
                 ApplySafeArea(safeArea);
 
-
+                //설정 메뉴 크기
                 SetSettingMunuArea(Panel.rect);
+                //상단탑바 크기
+                SetTopBarArea(Panel.rect);
+                //하단 버튼 크기
                 SetBottomBTNArea(Panel.rect);
                 SetWebViewArea(Panel.rect);
-                //SetWebview_AreaTest(Panel.rect);
-                Debug.Log($">>> Panel.rect {Panel.rect}");
-                Debug.Log($">>> Screen.height {Screen.height}");
-                Debug.Log($">>> safeArea.height {Screen.safeArea.height}");
+                Debug.Log($">>>!!! Panel.rect {Panel.rect}");
+                Debug.Log($">>>!!! Screen.safeArea {Screen.safeArea}");
             }
         }
+
+        public RectTransform settingMenuRect;
+        public void SetSettingMunuArea(Rect r)
+        {
+            if (settingMenuRect == null)
+            {
+                Debug.LogError("settingMenuRect == null");
+                settingMenuRect = GameObject.Find("SettingMenuObject").GetComponent<RectTransform>();
+            }
+
+            var height = Screen.safeArea.height;
+            //var height = r.height;
+            var panelHeight09 = height * 0.9f;
+            var panelHeight01 = height - panelHeight09;
+            var panelHarfHeight = panelHeight01 * 0.5f;
+
+
+            settingMenuRect.sizeDelta = new Vector2(Screen.safeArea.width, panelHeight09);
+            settingMenuRect.sizeDelta = new Vector2(Screen.safeArea.width, Screen.safeArea.height);
+
+            var newRectVisiblePos = new Vector3(0, 0, 0);
+            var newRectHidePos = new Vector3(settingMenuRect.sizeDelta.x, panelHarfHeight, 0);
+
+            //설정 메뉴 초기화
+            var setmenu = FindObjectOfType<SettingMenu>();
+            setmenu.SetVisiblePosSettingMenu(newRectVisiblePos);
+            setmenu.SetHidePosSettingMenu(newRectHidePos);
+        }
+
+        public RectTransform bottomBtnRect;
+        private void SetBottomBTNArea(Rect r)
+        {
+            if (bottomBtnRect == null)
+            {
+                Debug.LogError("settingMenuRect == null");
+                return;
+            }
+            var height = Screen.safeArea.height;
+            var settingPanelHeight01 = height * 0.1f;
+            //var buttomPanelHeight09 = height - settingPanelHeight01;
+            //var harfBtnPanelHeight = settingPanelHeight01 * 0.5f;
+
+            bottomBtnRect.position = new Vector3(Screen.safeArea.center.x, Screen.safeArea.height, 0);
+            //bottomBtnRect.sizeDelta = new Vector2(Screen.safeArea.width, settingPanelHeight01);
+            bottomBtnRect.sizeDelta = new Vector2(r.width, settingPanelHeight01);
+        }
+
+        public RectTransform topBarRect;
+        private void SetTopBarArea(Rect r)
+        {
+            if (topBarRect == null)
+            {
+                Debug.LogError("settingMenuRect == null");
+                return;
+            }
+            var height = Screen.safeArea.height;
+            var settingPanelHeight01 = height * 0.1f;
+            var buttomPanelHeight09 = height - settingPanelHeight01;
+            var harfBtnPanelHeight = settingPanelHeight01 * 0.5f;
+
+            topBarRect.position = new Vector3(Screen.safeArea.center.x, Screen.safeArea.height+ harfBtnPanelHeight, 0);
+            //bottomBtnRect.sizeDelta = new Vector2(Screen.safeArea.width, settingPanelHeight01);
+            topBarRect.sizeDelta = new Vector2(r.width, settingPanelHeight01);
+        }
+
+        public WebViewObject webViewObject;
+        private void SetWebViewArea(Rect r)
+        {
+            var height = Screen.safeArea.height;
+            var settingPanelHeight09 = r.height * 0.9f;
+            var buttomPanelHeight01 = r.height - settingPanelHeight09;
+            var harfBtnPanelHeight = buttomPanelHeight01 * 0.5f;
+
+            var webViewObject = FindObjectOfType<WebViewObject>();
+
+            webViewObject.SetCenterPositionWithScale(new Vector2(0, harfBtnPanelHeight), new Vector2(Screen.safeArea.width, Screen.safeArea.height * 0.9f));
+            webViewObject.SetVisibility(false);
+
+        }
+
+
+
 
         Rect GetSafeArea()
         {
@@ -251,89 +324,6 @@ namespace Crystal
             }
         }
 
-        public RectTransform bottomBtnRect;
-        private void SetBottomBTNArea(Rect r)
-        {
-            if (bottomBtnRect != null)
-            {
-                var settingPanelHeight = r.height * 0.1f;
-                var buttomPanelHeight = r.height - settingPanelHeight;
-
-                bottomBtnRect.sizeDelta = new Vector2(r.width, settingPanelHeight);
-            }
-        }
-
-        public RectTransform settingMenuRect;
-        public void SetSettingMunuArea(Rect r)
-        {
-            if (settingMenuRect != null)
-            {
-                settingMenuRect.sizeDelta = new Vector2(r.width, r.height);
-                //var settingPanelHeight = r.height * 0.9f;
-                //var buttomPanelHeight = r.height - settingPanelHeight;
-
-                //settingMenuRect.sizeDelta = new Vector2(r.width, settingPanelHeight);
-                //Debug.Log($"SetSettingMunuArea buttomPanelHeight : {buttomPanelHeight}");
-                //settingMenuRect.localPosition = new Vector3(0, buttomPanelHeight * 0.5f, 0);
-
-                //var setmenu = FindObjectOfType<SettingMenu>();
-                //setmenu.SetHidePosSettingMenu(new Vector3(settingMenuRect.sizeDelta.x, buttomPanelHeight * 0.5f, 0));
-
-                //CreateCrossheir(new Vector3(settingMenuRect.sizeDelta.x, buttomPanelHeight * 0.5f, 0), "SetHidePosSettingMenu");
-                //setmenu.SetVisiblePosSettingMenu(new Vector3(0, buttomPanelHeight * 0.5f, 0));
-                //CreateCrossheir(new Vector3(0, buttomPanelHeight * 0.5f, 0), "SetVisiblePosSettingMenu");
-            }
-        }
-
-
-        public WebViewObject webViewObject;
-        private void SetWebViewArea(Rect r)
-        {
-            var settingPanelHeight = r.height * 0.9f;
-            var buttomPanelHeight = r.height - settingPanelHeight;
-            var harfBtnPanelHeight = buttomPanelHeight * 0.5f;
-            webview_AreaTest.sizeDelta = new Vector2(r.width, settingPanelHeight);
-            webview_AreaTest.localPosition = new Vector3(0, harfBtnPanelHeight, 0);
-
-
-            Bounds bounds = GetRectTransformBounds(webview_AreaTest);
-            Debug.Log($"webview_AreaTest bounds : {bounds}");
-
-
-            var webViewObject = FindObjectOfType<WebViewObject>();
-
-            webViewObject.SetMargins(
-            (int)bounds.min.x,
-            (int)(Screen.height - bounds.max.y),
-            (int)(Screen.width - bounds.max.x),
-            (int)bounds.min.y);
-
-
-        }
-
-        public RectTransform webview_AreaTest;
-        private void SetWebview_AreaTest(Rect r)
-        {
-            var settingPanelHeight = r.height * 0.9f;
-            var buttomPanelHeight = r.height - settingPanelHeight;
-            var harfBtnPanelHeight = buttomPanelHeight * 0.5f;
-            webview_AreaTest.sizeDelta = new Vector2(r.width, settingPanelHeight);
-            webview_AreaTest.localPosition = new Vector3(0, harfBtnPanelHeight, 0);
-
-
-            Bounds bounds = GetRectTransformBounds(webview_AreaTest);
-            Debug.Log($"webview_AreaTest bounds : {bounds}");
-
-
-            var webViewObject = FindObjectOfType<WebViewObject>();
-
-            webViewObject.SetMargins(
-            (int)bounds.min.x,
-            (int)(Screen.height - bounds.max.y),
-            (int)(Screen.width - bounds.max.x),
-            (int)bounds.min.y);
-
-        }
         public static Bounds GetRectTransformBounds(RectTransform transform)
         {
             var corners = new Vector3[4];

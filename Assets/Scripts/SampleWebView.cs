@@ -234,13 +234,20 @@ public class SampleWebView : MonoBehaviour
         {
             Rect bounds = Screen.safeArea;
 
-            var bottomY = ((Screen.height - bounds.max.y)) - bounds.min.y;
-            webViewObject.SetMargins(
-            (int)bounds.min.x,
-            (int)(Screen.height - bounds.max.y),
-            (int)(Screen.width - bounds.max.x),
-            (int)bottomY);
-            //(int)bounds.min.y);
+            //var settingPanelHeight = bounds.height * 0.9f;
+            //var buttomPanelHeight = bounds.height - settingPanelHeight;
+
+            //var buttomPanelCenter = buttomPanelHeight * 0.5f;
+
+            //Rect newWebviewArea = new Rect();
+            //newWebviewArea.height = bounds.height;
+            //newWebviewArea.width = bounds.width;
+            //newWebviewArea.y = buttomPanelCenter;
+
+            ////webview_AreaTest.sizeDelta = new Vector2(bounds.width, settingPanelHeight);
+            ////webview_AreaTest.localPosition = new Vector3(0, harfBtnPanelHeight, 0);
+
+            //webViewObject.SetCenterPositionWithScale(new Vector2(0, 0), new Vector2(bounds.width -300, newWebviewArea.height));
 
             //webViewObject.SetMargins(0, 0, 0, (int)((Screen.safeArea.y + Screen.safeArea.height) * 0.1));
         }
