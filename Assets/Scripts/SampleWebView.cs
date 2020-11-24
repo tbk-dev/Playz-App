@@ -255,23 +255,13 @@ public class SampleWebView : MonoBehaviour
         {
             webViewObject.SetMargins(0, 0, 0, (int)((Screen.safeArea.y +Screen.safeArea.height) - 192));
         }
-        
 
-        Debugging.instance.DebugLog($"transform.position);" + webViewObject.transform.position);
-        Debugging.instance.DebugLog($"transform.localScale);" + webViewObject.transform.localScale);
-        
-        
-        Debugging.instance.DebugLog($"Screen width   L    " + Screen.width );
-        Debugging.instance.DebugLog($"Screen height   L    " + Screen.height );
-        Debugging.instance.DebugLog($"safeArea.x   L    " + Screen.safeArea.x );
-        Debugging.instance.DebugLog($"safeArea.y   L    " + Screen.safeArea.y );
-        Debugging.instance.DebugLog($"safeArea.width   L    " + Screen.safeArea.width );
-        Debugging.instance.DebugLog($"safeArea.height   L    " + Screen.safeArea.height );
-        Debugging.instance.DebugLog($"safeArea.xMin   L    " + Screen.safeArea.xMin );
-        Debugging.instance.DebugLog($"safeArea.xMax   L    " + Screen.safeArea.xMax );
-        Debugging.instance.DebugLog($"safeArea.yMin   L    " + Screen.safeArea.yMin );
-        Debugging.instance.DebugLog($"safeArea.yMax   L    " + Screen.safeArea.yMax );
-        Debugging.instance.DebugLog($"safeArea.center   L    " + Screen.safeArea.center );
+
+        Debug.Log($"transform.position : " + webViewObject.transform.position + "  localScale : " + webViewObject.transform.localScale);
+
+        Debug.Log($"Screen.width  :  " + Screen.width + "  height  :  " + Screen.height);
+        Debug.Log($"safeArea.center  :  " + Screen.safeArea.center);
+        Debug.Log($"safeArea.xMin  :  " + Screen.safeArea.xMin + "  xMax  :  " + Screen.safeArea.xMax + "  safeArea.yMin  :  " + Screen.safeArea.yMin + "  yMax  :  " + Screen.safeArea.yMax);
 
         //Debug.Log($"log >>> : height : {Screen.height} , 0.1 : {(int)(Screen.height * 0.1)}  ???? {Screen.height- (int)(Screen.height * 0.1)}  ");
         //Debug.Log($"log >>> : width : {Screen.width} , 0.1 : {(int)(Screen.width * 0.1)}  ???? {Screen.width - (int)(Screen.width * 0.1)}  ");

@@ -98,7 +98,7 @@ public class PluginInit : MonoBehaviour
 
     public void AttachAndroid()
     {
-        Debugging.instance.DebugLog($"run AttachAndroid");
+        Debugging.instance.DebugLog($"run AttachAndroid...");
 
         GetUnityActivity();
 
@@ -156,7 +156,7 @@ public class PluginInit : MonoBehaviour
 
     private void InitSetting()
     {
-        Debugging.instance.DebugLog("run InitSetting");
+        Debugging.instance.DebugLog("run InitSetting...");
         TokenRegistrationOnInitEnabled(toggleReceiveInfo.isOn);
 
         toggleReceiveInfo.isOn = GetPreferenceBool(receiveInfo);
@@ -179,7 +179,7 @@ public class PluginInit : MonoBehaviour
     public void VibrateAction(int ms = 500)
     {
 #if UNITY_ANDROID
-        Debugging.instance.DebugLog("run VibrateAction");
+        Debugging.instance.DebugLog("run VibrateAction...");
         try
         {
             fcmPluginInstance.Call("vibrateAction", ms, activityContext);
@@ -195,7 +195,7 @@ public class PluginInit : MonoBehaviour
 
     private void ToggleReceiveInfo_ButtonEvent(bool isOn)
     {
-        Debugging.instance.DebugLog($"run ToggleReceiveInfo_ButtonEvent  {isOn}");
+        Debugging.instance.DebugLog($"run ToggleReceiveInfo_ButtonEvent...  {isOn}");
         //TokenRegistrationOnInitEnabled(isOn);
 
         //todo 안드로이드에서도 통신결과에 따라 옵션을 설정하려면 주석해제
@@ -214,14 +214,14 @@ public class PluginInit : MonoBehaviour
     //딜리트 결과에 따라 알림설정변경
     void ApiAction(bool isOn)
     {
-        Debugging.instance.DebugLog($"run ApiAction {isOn}");
+        Debugging.instance.DebugLog($"run ApiAction... {isOn}");
         SetPreferencBool(receiveInfo, isOn);
     }
 
     private void TokenRegistrationOnInitEnabled(bool isOn)
     {
         //todo 구독관리1
-        Debugging.instance.DebugLog($"run TokenRegistrationOnInitEnabled");
+        Debugging.instance.DebugLog($"run TokenRegistrationOnInitEnabled...");
         Firebase.Messaging.FirebaseMessaging.TokenRegistrationOnInitEnabled = isOn;
         //FindObjectOfType<FirebaseMSGSet>().ToggleTokenOnInit();
 

@@ -78,7 +78,7 @@ namespace DanielLochner.Assets.SimpleSideMenu
             {
                 Setup();
 
-                StartCoroutine(Rotate());
+                //StartCoroutine(Rotate());
             }
             else
             {
