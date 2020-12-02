@@ -10,12 +10,6 @@ public class WebViewSift : MonoBehaviour
     public WebViewObject webViewObject { get; private set; }
     SimpleSideMenu simpleSideMenu;
 
-
-    public SimpleSideMenu right_simpleSideMenu;
-    RectTransform rectTransform;
-
-    public SimpleSideMenu left_simpleSideMenu;
-
     public SettingMenu SettingMenuOBJ;
 
     void Start()
@@ -23,11 +17,10 @@ public class WebViewSift : MonoBehaviour
         webViewObject = FindObjectOfType<WebViewObject>();
 
         if (webViewObject == null)
-            Debugging.instance.DebugLog("webViewObject is null");
+            Debugging.instance.DebugLog(">>> webViewObject is null");
 
-        if (right_simpleSideMenu != null)
-            rectTransform = right_simpleSideMenu.GetComponent<RectTransform>();
-
+        if (SettingMenuOBJ == null)
+            Debugging.instance.DebugLog(">>> SettingMenuOBJ is null");
     }
 
     void Update()
@@ -50,11 +43,14 @@ public class WebViewSift : MonoBehaviour
                 if (webViewObject.GetVisibility() == false)
                 {
                     //todo
-                    webViewObject.SetVisibility(false);
+                    webViewObject.SetVisibility(true);
                     //SettingMenuOBJ.gameObject.SetActive(false);
                 }
             }
         }
+        else
+            Debugging.instance.DebugLog("### webViewObject == null");
+
     }
 
 
@@ -127,19 +123,13 @@ public class WebViewSift : MonoBehaviour
     }
 
 
-
     public void CloseSideMenu()
     {
-        //right_simpleSideMenu.Close();
-        //left_simpleSideMenu.Open();
     }
 
     public void OpenSideMenu()
     {
-        //right_simpleSideMenu.Open();
-        //left_simpleSideMenu.Close();
     }
-
 
 }
 

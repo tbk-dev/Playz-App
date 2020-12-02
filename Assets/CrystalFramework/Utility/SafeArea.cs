@@ -145,17 +145,13 @@ namespace Crystal
                 ApplySafeArea(safeArea);
                 //var returnPannel = ApplySafeArea(safeArea);
 
-                Debug.Log($"<<< Panel.rect2  {Panel.rect}");
-                //Debug.Log($"<<< returnPannel  {returnPannel.rect}");
-
                 SetSettingMunuArea(Panel.rect); //설정 메뉴 크기
                 SetTopBarArea(Panel.rect); //상단탑바 크기
                 SetBottomBTNArea(Panel.rect); //하단 버튼 크기
 
                 //SetscrollViewArea(Panel.rect);
 
-
-                SetWebViewArea(Panel.rect);
+                //SetWebViewArea(Panel.rect);
             }
         }
         public RectTransform scrollView;
@@ -186,7 +182,7 @@ namespace Crystal
             if (settingMenuRect == null)
             {
                 Debug.LogError("settingMenuRect == null");
-                settingMenuRect = GameObject.Find("SettingMenuObject").GetComponent<RectTransform>();
+                settingMenuRect = GameObject.Find("1SettingMenuObject").GetComponent<RectTransform>();
             }
 
             var height = Screen.safeArea.height;
@@ -216,10 +212,15 @@ namespace Crystal
                 Debug.LogError("topBarRect == null");
                 return;
             }
+
+
             var height = Screen.safeArea.height;
             var settingPanelHeight01 = height * 0.1f;
 
-            //topBarRect.position = new Vector3(0, height, 0);// height - harfBtnPanelHeight, 0);
+            var topbarChilds = topBarRect.GetComponentsInChildren<RectTransform>();
+            topbarChilds[1].sizeDelta= new Vector2(settingPanelHeight01, settingPanelHeight01);
+
+            topBarRect.position = new Vector3(topBarRect.position.x, topBarRect.position.y + 1, topBarRect.position.z);// height - harfBtnPanelHeight, 0);
             topBarRect.sizeDelta = new Vector2(r.width, settingPanelHeight01);
         }
 

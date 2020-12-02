@@ -491,7 +491,7 @@ public class PluginInit : MonoBehaviour
         try
         {
             var result = androidJavaObject.CallStatic<AndroidJavaObject>(objectName);
-            Debugging.instance.DebugLog("### call JavaObjectCallStaticObject");
+            Debugging.instance.DebugLog("call JavaObjectCallStaticObject");
             return result;
         }
         catch (Exception)
@@ -507,7 +507,7 @@ public class PluginInit : MonoBehaviour
         {
 
             var result = androidJavaObject.Call<AndroidJavaObject>(objectName);
-            Debugging.instance.DebugLog("### call JavaObjectCallObject");
+            Debugging.instance.DebugLog("call JavaObjectCallObject");
             return result;
         }
         catch (Exception)
@@ -522,7 +522,7 @@ public class PluginInit : MonoBehaviour
         try
         {
             var result = androidJavaClass.CallStatic<AndroidJavaObject>(objectName);
-            Debugging.instance.DebugLog("### call JavaClassCallStaticObject");
+            Debugging.instance.DebugLog("call JavaClassCallStaticObject");
             return result;
         }
         catch (Exception)
@@ -538,7 +538,7 @@ public class PluginInit : MonoBehaviour
         {
 
             var result = androidJavaClass.Call<AndroidJavaObject>(objectName);
-            Debugging.instance.DebugLog("### call JavaClassCallObject");
+            Debugging.instance.DebugLog("call JavaClassCallObject");
             return result;
         }
         catch (Exception)
@@ -554,7 +554,7 @@ public class PluginInit : MonoBehaviour
         try
         {
             var result = androidJavaObject.CallStatic<AndroidJavaClass>(className);
-            Debugging.instance.DebugLog("### call JavaObjectCallStaticClass");
+            Debugging.instance.DebugLog("call JavaObjectCallStaticClass");
             return result;
 
         }
@@ -571,7 +571,7 @@ public class PluginInit : MonoBehaviour
         {
 
             var result = androidJavaObject.Call<AndroidJavaClass>(className);
-            Debugging.instance.DebugLog("### call JavaObjectCallClass");
+            Debugging.instance.DebugLog("call JavaObjectCallClass");
             return result;
         }
         catch (Exception)
@@ -586,7 +586,7 @@ public class PluginInit : MonoBehaviour
         try
         {
             var result = androidJavaClass.CallStatic<AndroidJavaClass>(className);
-            Debugging.instance.DebugLog("### call JavaClassCallStaticClass");
+            Debugging.instance.DebugLog("call JavaClassCallStaticClass");
             return result;
         }
         catch (Exception)
@@ -601,7 +601,7 @@ public class PluginInit : MonoBehaviour
         try
         {
             var result = androidJavaClass.Call<AndroidJavaClass>(className);
-            Debugging.instance.DebugLog("### call JavaClassCallClass");
+            Debugging.instance.DebugLog("call JavaClassCallClass");
             return result;
         }
         catch (Exception)

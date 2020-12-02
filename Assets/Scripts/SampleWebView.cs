@@ -232,41 +232,33 @@ public class SampleWebView : MonoBehaviour
 
         if (Screen.safeArea.width < Screen.safeArea.height)
         {
-            Rect bounds = Screen.safeArea;
+            var settingPanelHeight = Screen.safeArea.height * 0.9f;
 
-            //var settingPanelHeight = bounds.height * 0.9f;
-            //var buttomPanelHeight = bounds.height - settingPanelHeight;
+            var buttomPanelHeight = Screen.safeArea.height - settingPanelHeight;
+            var buttomPanelCenter = buttomPanelHeight * 0.5f;
 
-            //var buttomPanelCenter = buttomPanelHeight * 0.5f;
+            Rect newWebviewArea = new Rect
+            {
+                height = settingPanelHeight,
+                width = Screen.safeArea.width - 300,
+                y = buttomPanelCenter
+            };
 
-            //Rect newWebviewArea = new Rect();
-            //newWebviewArea.height = bounds.height;
-            //newWebviewArea.width = bounds.width;
-            //newWebviewArea.y = buttomPanelCenter;
-
-            ////webview_AreaTest.sizeDelta = new Vector2(bounds.width, settingPanelHeight);
-            ////webview_AreaTest.localPosition = new Vector3(0, harfBtnPanelHeight, 0);
-
-            //webViewObject.SetCenterPositionWithScale(new Vector2(0, 0), new Vector2(bounds.width -300, newWebviewArea.height));
+            webViewObject.SetCenterPositionWithScale(new Vector2(0, buttomPanelCenter), new Vector2(Screen.safeArea.width, settingPanelHeight));
 
             //webViewObject.SetMargins(0, 0, 0, (int)((Screen.safeArea.y + Screen.safeArea.height) * 0.1));
         }
         else
         {
-            webViewObject.SetMargins(0, 0, 0, (int)((Screen.safeArea.y +Screen.safeArea.height) - 192));
+            //가로길이가 더 큰경우
+            //webViewObject.SetMargins(0, 0, 0, (int)((Screen.safeArea.y +Screen.safeArea.height) - 192));
+            Debug.Log($"");
+
         }
 
-
-        Debug.Log($"transform.position : " + webViewObject.transform.position + "  localScale : " + webViewObject.transform.localScale);
-
-        Debug.Log($"Screen.width  :  " + Screen.width + "  height  :  " + Screen.height);
-        Debug.Log($"safeArea.center  :  " + Screen.safeArea.center);
-        Debug.Log($"safeArea.xMin  :  " + Screen.safeArea.xMin + "  xMax  :  " + Screen.safeArea.xMax + "  safeArea.yMin  :  " + Screen.safeArea.yMin + "  yMax  :  " + Screen.safeArea.yMax);
-
-        //Debug.Log($"log >>> : height : {Screen.height} , 0.1 : {(int)(Screen.height * 0.1)}  ???? {Screen.height- (int)(Screen.height * 0.1)}  ");
-        //Debug.Log($"log >>> : width : {Screen.width} , 0.1 : {(int)(Screen.width * 0.1)}  ???? {Screen.width - (int)(Screen.width * 0.1)}  ");
         webViewObject.SetVisibility(true);
-        
+            Debug.Log($"webViewObject.SetVisibility(true)  webViewObject.SetVisibility(true)  webViewObject.SetVisibility(true)  ");
+
 #if !UNITY_WEBPLAYER && !UNITY_WEBGL
         if (Url.StartsWith("http"))
         {
@@ -486,7 +478,6 @@ public class SampleWebView : MonoBehaviour
             return loginAuth;
         }
 
-        Debugging.instance.DebugLog($"::: LoadLoginAuth IsNullOrEmpty(playerInfo.dat)");
         return null;
     }
 
