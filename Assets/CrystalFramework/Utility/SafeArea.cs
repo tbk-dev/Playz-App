@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.iOS;
 
 namespace Crystal
 {
@@ -120,11 +121,10 @@ namespace Crystal
             Refresh();
         }
 
-
+        public bool refresh = false;
         void Refresh()
         {
             Rect safeArea = GetSafeArea();
-
             if (safeArea != LastSafeArea
                 || Screen.width != LastScreenSize.x
                 || Screen.height != LastScreenSize.y
@@ -153,6 +153,13 @@ namespace Crystal
 
                 //SetWebViewArea(Panel.rect);
             }
+
+            //if (refresh == true)
+            //{
+            //    refresh = false;
+            //    Debug.Log("refresh");
+            //    SetBottomBTNArea(Panel.rect); //하단 버튼 크기
+            //}
         }
         public RectTransform scrollView;
         private void SetscrollViewArea(Rect r)
@@ -223,7 +230,7 @@ namespace Crystal
             topBarRect.position = new Vector3(topBarRect.position.x, topBarRect.position.y + 1, topBarRect.position.z);// height - harfBtnPanelHeight, 0);
             topBarRect.sizeDelta = new Vector2(r.width, settingPanelHeight01);
         }
-
+        public float bottomBtnOffset = 0.7f;
         public RectTransform bottomBtnRect;
         private void SetBottomBTNArea(Rect r)
         {
@@ -238,7 +245,9 @@ namespace Crystal
             //var buttomPanelHeight09 = height - settingPanelHeight01;
             //var harfBtnPanelHeight = settingPanelHeight01 * 0.5f;
 
-            bottomBtnRect.position = new Vector3(Screen.safeArea.center.x, Screen.safeArea.y, 0);
+            var safeY = Screen.safeArea.y * bottomBtnOffset;
+            bottomBtnRect.position = new Vector3(Screen.safeArea.center.x, safeY, 0);
+
             //bottomBtnRect.sizeDelta = new Vector2(Screen.safeArea.width, settingPanelHeight01);
             bottomBtnRect.sizeDelta = new Vector2(r.width, settingPanelHeight01);
         }
